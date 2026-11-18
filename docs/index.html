@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#101211">
-  <meta name="description" content="1337res is a portable Windows app for switching display resolutions and refresh rates with global hotkeys.">
+  <meta name="theme-color" content="#08080a">
+  <meta name="description" content="1337res is a portable Windows app for enabling and disabling connected monitors and switching display modes with global hotkeys.">
   <title>1337res — Windows display switcher</title>
   <link rel="stylesheet" href="styles.css">
   <script src="preview.js" defer></script>
@@ -28,8 +28,8 @@
     <section class="hero container" aria-labelledby="hero-title">
       <div class="hero-copy">
         <p class="platform"><span class="windows-mark" aria-hidden="true"></span> Windows 10 / 11 · x64</p>
-        <h1 id="hero-title">Switch resolutions <span>with a hotkey.</span></h1>
-        <p class="hero-description">Set your monitor’s resolution and refresh rate, save your favorite modes, and switch between them from anywhere.</p>
+        <h1 id="hero-title">Control every <span>connected display.</span></h1>
+        <p class="hero-description">Turn monitors on or off, choose your resolution and refresh rate, and switch between saved modes with a hotkey.</p>
         <div class="hero-actions">
           <a class="button button-primary" href="https://github.com/sullyzv/1337res/releases/latest/download/1337res-win-x64.exe">Download for Windows</a>
           <a class="text-link" href="https://github.com/sullyzv/1337res/releases">View releases</a>
@@ -51,6 +51,10 @@
                 <span id="mode-refresh">144 Hz</span>
               </div>
               <div class="display-diagram" aria-hidden="true"><span id="mode-frame"></span></div>
+            </div>
+            <div class="preview-monitor">
+              <div><strong>Secondary display</strong><span id="monitor-state" role="status">Disabled</span></div>
+              <button type="button" id="monitor-toggle" aria-label="Enable secondary display">Enable</button>
             </div>
             <p class="profile-label" id="profile-label">Display profiles</p>
             <div class="preview-profiles" role="group" aria-labelledby="profile-label">
@@ -74,6 +78,11 @@
         <h2 id="features-title">Display controls</h2>
         <div class="feature-grid">
           <article class="feature-card">
+            <span class="feature-icon icon-monitors" aria-hidden="true"></span>
+            <h3>Monitor controls</h3>
+            <p>Find disabled displays, identify active screens by number, and switch monitors on or off while keeping at least one screen active.</p>
+          </article>
+          <article class="feature-card">
             <span class="feature-icon icon-keys" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
             <h3>Global hotkeys</h3>
             <p>Bind a shortcut to each saved profile and use it while 1337res runs in your system tray.</p>
@@ -84,14 +93,9 @@
             <p>Enter a width, height, and refresh rate. 1337res checks the mode with your graphics driver before applying it.</p>
           </article>
           <article class="feature-card">
-            <span class="feature-icon icon-monitors" aria-hidden="true"></span>
-            <h3>Per-monitor profiles</h3>
-            <p>Select the display you want to change, find a supported mode, and save it as a profile.</p>
-          </article>
-          <article class="feature-card">
             <span class="feature-icon icon-clock" aria-hidden="true"></span>
             <h3>15-second rollback</h3>
-            <p>Try a mode and keep it if it works for you. The previous mode returns automatically if time runs out.</p>
+            <p>Confirm a display change before the timer runs out. You can also restore a monitor’s previous resolution from the app or tray.</p>
           </article>
         </div>
       </div>
@@ -99,12 +103,12 @@
 
     <section class="setup-section container" id="setup" aria-labelledby="setup-title">
       <div class="setup-copy">
-        <h2 id="setup-title">Set up your first shortcut.</h2>
+        <h2 id="setup-title">Set up your displays.</h2>
         <p>1337res stores your profiles and hotkeys on your PC.</p>
       </div>
       <ol class="steps">
         <li><div><h3>Run 1337res</h3><p>Download and open the Windows executable.</p></div></li>
-        <li><div><h3>Choose a display mode</h3><p>Pick your monitor, then select a mode or enter your own values.</p></div></li>
+        <li><div><h3>Choose what’s active</h3><p>Open Monitors to enable or disable displays. Open Display to choose a resolution and refresh rate.</p></div></li>
         <li><div><h3>Save a profile</h3><p>Give it a name, assign a shortcut, and keep 1337res running in the tray.</p></div></li>
       </ol>
     </section>
