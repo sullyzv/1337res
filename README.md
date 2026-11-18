@@ -7,7 +7,7 @@ See which monitors are connected, turn displays on or off, and switch resolution
 ## Get started
 
 1. Download and open `1337res-win-x64.exe` on Windows 11 or a supported Windows 10 release, x64. The executable includes the .NET runtime and runs without an installer.
-2. Open **Monitors** to see connected displays and whether each is enabled. Use **Identify monitors** to show a number on each active screen. Select **Enable** or **Disable** next to the display you want to change. 1337res keeps at least one display active.
+2. Open **Monitors** to see connected displays and whether each is enabled. Use **Identify monitors** to show a number on each active screen. Select **Enable** or **Disable** next to the display you want to change. Disabling the last monitor powers off its screen while Windows keeps the desktop attached. Move the mouse or press a key to wake it.
 3. Open **Display** to change the resolution or refresh rate of an active monitor. Pick a listed mode or enter a custom width, height, and refresh rate.
 4. Confirm a change within 15 seconds to keep it. Choose **Revert** or let the timer expire to restore your previous display settings.
 5. Save a mode as a named profile and assign a hotkey if you want one. For example, assign `Ctrl` + `Alt` + `1` to your desktop mode and `Ctrl` + `Alt` + `2` to a game mode.
