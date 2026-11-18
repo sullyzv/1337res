@@ -1,0 +1,728 @@
+<Window x:Class="Res1337.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
+        xmlns:automation="clr-namespace:System.Windows.Automation;assembly=PresentationCore"
+        Title="1337res" Width="1220" Height="820" MinWidth="870" MinHeight="660"
+        WindowStartupLocation="CenterScreen" Background="#101114" Foreground="#F1F3EF"
+        FontFamily="Segoe UI" FontSize="13" UseLayoutRounding="True" TextOptions.TextFormattingMode="Display">
+    <shell:WindowChrome.WindowChrome>
+        <shell:WindowChrome CaptionHeight="46" GlassFrameThickness="0" ResizeBorderThickness="5" CornerRadius="0" />
+    </shell:WindowChrome.WindowChrome>
+
+    <Window.Resources>
+        <SolidColorBrush x:Key="Text" Color="#F1F3EF" />
+        <SolidColorBrush x:Key="Muted" Color="#A2AAA5" />
+        <SolidColorBrush x:Key="Line" Color="#2B3031" />
+        <SolidColorBrush x:Key="Card" Color="#181B1D" />
+        <SolidColorBrush x:Key="Input" Color="#141719" />
+        <SolidColorBrush x:Key="Hover" Color="#272D2C" />
+        <SolidColorBrush x:Key="Lime" Color="#C4FA65" />
+        <SolidColorBrush x:Key="LimeDark" Color="#222F20" />
+        <SolidColorBrush x:Key="Error" Color="#FFADA9" />
+        <FontFamily x:Key="Mono">Cascadia Mono, Consolas</FontFamily>
+
+        <Geometry x:Key="ScreenIcon">M2,3 H18 V14 H2 Z M10,14 V18 M6,18 H14</Geometry>
+        <Geometry x:Key="StackIcon">M10,2 L18,6 L10,10 L2,6 Z M2,10 L10,14 L18,10 M2,14 L10,18 L18,14</Geometry>
+        <Geometry x:Key="SettingsIcon">M3,5 H17 M3,10 H17 M3,15 H17 M7,3 V7 M13,8 V12 M8,13 V17</Geometry>
+        <Geometry x:Key="InfoIcon">M10,2 A8,8 0 1 1 9.99,2 Z M10,9 V14 M10,6 V7</Geometry>
+        <Geometry x:Key="RefreshIcon">M17,8 A7,7 0 1 0 17,13 M17,3 V8 H12</Geometry>
+        <Geometry x:Key="TrayIcon">M3,12 L5,17 H15 L17,12 M10,2 V12 M6,8 L10,12 L14,8</Geometry>
+        <Geometry x:Key="ArrowIcon">M4,10 H16 M11,5 L16,10 L11,15</Geometry>
+
+        <Style x:Key="SmallLabel" TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="{StaticResource Mono}" />
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="Foreground" Value="{StaticResource Muted}" />
+        </Style>
+        <Style x:Key="PageTitle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="36" />
+            <Setter Property="FontWeight" Value="Bold" />
+        </Style>
+        <Style x:Key="CardTitle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="18" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+        </Style>
+        <Style x:Key="Description" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource Muted}" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+            <Setter Property="LineHeight" Value="19" />
+        </Style>
+        <Style x:Key="CardSurface" TargetType="Border">
+            <Setter Property="Background" Value="{StaticResource Card}" />
+            <Setter Property="BorderBrush" Value="{StaticResource Line}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="12" />
+            <Setter Property="Padding" Value="20" />
+        </Style>
+        <Style x:Key="ButtonFocus" TargetType="Control">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate>
+                        <Border Margin="2" CornerRadius="6" BorderBrush="{StaticResource Lime}" BorderThickness="1" />
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style TargetType="Button">
+            <Setter Property="Foreground" Value="{StaticResource Text}" />
+            <Setter Property="Background" Value="#242929" />
+            <Setter Property="BorderBrush" Value="{StaticResource Line}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Padding" Value="13,8" />
+            <Setter Property="MinHeight" Value="36" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="FocusVisualStyle" Value="{StaticResource ButtonFocus}" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="ButtonSurface" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="7" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" RecognizesAccessKey="True" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="ButtonSurface" Property="BorderBrush" Value="#697568" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="ButtonSurface" Property="Opacity" Value="0.75" />
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="ButtonSurface" Property="Opacity" Value="0.42" />
+                                <Setter Property="Cursor" Value="Arrow" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="PrimaryButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+            <Setter Property="Foreground" Value="#15220E" />
+            <Setter Property="Background" Value="{StaticResource Lime}" />
+            <Setter Property="BorderBrush" Value="{StaticResource Lime}" />
+        </Style>
+        <Style x:Key="TitleButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+            <Setter Property="Width" Value="42" />
+            <Setter Property="MinHeight" Value="32" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="shell:WindowChrome.IsHitTestVisibleInChrome" Value="True" />
+        </Style>
+        <Style x:Key="NavItem" TargetType="RadioButton">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="{StaticResource Muted}" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="GroupName" Value="Navigation" />
+            <Setter Property="Height" Value="43" />
+            <Setter Property="Margin" Value="0,0,0,5" />
+            <Setter Property="FocusVisualStyle" Value="{StaticResource ButtonFocus}" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RadioButton">
+                        <Border x:Name="NavSurface" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="1" CornerRadius="8" Padding="12,0">
+                            <ContentPresenter VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="NavSurface" Property="Background" Value="{StaticResource Hover}" />
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="NavSurface" Property="Background" Value="{StaticResource LimeDark}" />
+                                <Setter TargetName="NavSurface" Property="BorderBrush" Value="#394B32" />
+                                <Setter Property="Foreground" Value="{StaticResource Lime}" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="NavIcon" TargetType="Path">
+            <Setter Property="Width" Value="17" />
+            <Setter Property="Height" Value="17" />
+            <Setter Property="Stretch" Value="Uniform" />
+            <Setter Property="Stroke" Value="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}" />
+            <Setter Property="StrokeThickness" Value="1.4" />
+            <Setter Property="StrokeStartLineCap" Value="Round" />
+            <Setter Property="StrokeEndLineCap" Value="Round" />
+            <Setter Property="StrokeLineJoin" Value="Round" />
+            <Setter Property="Margin" Value="0,0,11,0" />
+        </Style>
+        <Style TargetType="TextBox">
+            <Setter Property="Foreground" Value="{StaticResource Text}" />
+            <Setter Property="Background" Value="{StaticResource Input}" />
+            <Setter Property="CaretBrush" Value="{StaticResource Lime}" />
+            <Setter Property="SelectionBrush" Value="#546E37" />
+            <Setter Property="BorderBrush" Value="{StaticResource Line}" />
+            <Setter Property="Padding" Value="10,0" />
+            <Setter Property="MinHeight" Value="36" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border x:Name="InputSurface" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="1" CornerRadius="7" Padding="{TemplateBinding Padding}">
+                            <ScrollViewer x:Name="PART_ContentHost" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsKeyboardFocused" Value="True">
+                                <Setter TargetName="InputSurface" Property="BorderBrush" Value="{StaticResource Lime}" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="ChoiceItem" TargetType="ComboBoxItem">
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+            <Setter Property="Padding" Value="10,8" />
+            <Setter Property="Foreground" Value="{StaticResource Text}" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ComboBoxItem">
+                        <Border x:Name="ChoiceSurface" Background="Transparent" Padding="{TemplateBinding Padding}" CornerRadius="5">
+                            <ContentPresenter />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsHighlighted" Value="True">
+                                <Setter TargetName="ChoiceSurface" Property="Background" Value="{StaticResource Hover}" />
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter Property="Foreground" Value="{StaticResource Lime}" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style TargetType="ComboBox">
+            <Setter Property="Foreground" Value="{StaticResource Text}" />
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="MinHeight" Value="38" />
+            <Setter Property="ItemContainerStyle" Value="{StaticResource ChoiceItem}" />
+            <Setter Property="MaxDropDownHeight" Value="260" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ComboBox">
+                        <Grid>
+                            <ToggleButton x:Name="ChoiceToggle" Focusable="False" ClickMode="Press"
+                                          IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}">
+                                <ToggleButton.Template>
+                                    <ControlTemplate TargetType="ToggleButton">
+                                        <Border x:Name="ToggleSurface" Background="{StaticResource Input}" BorderBrush="{StaticResource Line}"
+                                                BorderThickness="1" CornerRadius="7">
+                                            <Path Data="M0,0 L4,4 L8,0" Stroke="{StaticResource Muted}" StrokeThickness="1.4"
+                                                  HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,13,0" />
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter TargetName="ToggleSurface" Property="BorderBrush" Value="#697568" />
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </ToggleButton.Template>
+                            </ToggleButton>
+                            <ContentPresenter Margin="11,0,29,0" VerticalAlignment="Center" IsHitTestVisible="False"
+                                              Content="{TemplateBinding SelectionBoxItem}" ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}" />
+                            <Popup x:Name="PART_Popup" Placement="Bottom" AllowsTransparency="True" Focusable="False"
+                                   IsOpen="{TemplateBinding IsDropDownOpen}" PopupAnimation="Fade">
+                                <Border Background="{StaticResource Card}" BorderBrush="{StaticResource Line}" BorderThickness="1"
+                                        CornerRadius="7" Padding="4" Margin="0,3,0,0"
+                                        MinWidth="{TemplateBinding ActualWidth}" MaxHeight="{TemplateBinding MaxDropDownHeight}">
+                                    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                                        <ItemsPresenter KeyboardNavigation.DirectionalNavigation="Contained" />
+                                    </ScrollViewer>
+                                </Border>
+                            </Popup>
+                            <Border x:Name="ChoiceFocus" Visibility="Collapsed" BorderBrush="{StaticResource Lime}" BorderThickness="1"
+                                    CornerRadius="7" IsHitTestVisible="False" />
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsKeyboardFocused" Value="True">
+                                <Setter TargetName="ChoiceFocus" Property="Visibility" Value="Visible" />
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.48" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style TargetType="ListBoxItem">
+            <Setter Property="Foreground" Value="{StaticResource Text}" />
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+            <Setter Property="Padding" Value="9,7" />
+            <Setter Property="Margin" Value="0,0,3,2" />
+            <Setter Property="automation:AutomationProperties.Name" Value="{Binding AccessibilityLabel}" />
+            <Setter Property="FocusVisualStyle" Value="{StaticResource ButtonFocus}" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListBoxItem">
+                        <Border x:Name="RowSurface" Background="Transparent" BorderBrush="Transparent" BorderThickness="1" CornerRadius="6"
+                                Padding="{TemplateBinding Padding}" MinHeight="34">
+                            <ContentPresenter />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="RowSurface" Property="Background" Value="{StaticResource Hover}" />
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="RowSurface" Property="Background" Value="{StaticResource LimeDark}" />
+                                <Setter TargetName="RowSurface" Property="BorderBrush" Value="#394B32" />
+                                <Setter Property="Foreground" Value="{StaticResource Lime}" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style TargetType="ListBox">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
+            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
+        </Style>
+        <Style TargetType="ScrollBar">
+            <Setter Property="Width" Value="10" />
+            <Setter Property="MinWidth" Value="0" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ScrollBar">
+                        <Border Background="{StaticResource Input}" CornerRadius="5" Margin="1,0,0,0">
+                            <Track x:Name="PART_Track" IsDirectionReversed="True" Orientation="{TemplateBinding Orientation}">
+                                <Track.DecreaseRepeatButton>
+                                    <RepeatButton Command="ScrollBar.PageUpCommand" Focusable="False" Opacity="0" />
+                                </Track.DecreaseRepeatButton>
+                                <Track.Thumb>
+                                    <Thumb>
+                                        <Thumb.Template>
+                                            <ControlTemplate TargetType="Thumb">
+                                                <Border x:Name="Grip" Margin="2,0" Background="#535D57" CornerRadius="3" />
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter TargetName="Grip" Property="Background" Value="#8D9C8B" />
+                                                    </Trigger>
+                                                    <Trigger Property="IsDragging" Value="True">
+                                                        <Setter TargetName="Grip" Property="Background" Value="{StaticResource Lime}" />
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Thumb.Template>
+                                    </Thumb>
+                                </Track.Thumb>
+                                <Track.IncreaseRepeatButton>
+                                    <RepeatButton Command="ScrollBar.PageDownCommand" Focusable="False" Opacity="0" />
+                                </Track.IncreaseRepeatButton>
+                            </Track>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style TargetType="CheckBox">
+            <Setter Property="Foreground" Value="{StaticResource Text}" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="FocusVisualStyle" Value="{StaticResource ButtonFocus}" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="CheckBox">
+                        <StackPanel Orientation="Horizontal" Background="Transparent">
+                            <Border x:Name="ToggleTrack" Width="39" Height="23" CornerRadius="12" Background="#2D3433" Margin="0,0,12,0">
+                                <Ellipse x:Name="ToggleThumb" Width="15" Height="15" Fill="#A2AAA5" Margin="4,0"
+                                         HorizontalAlignment="Left" VerticalAlignment="Center" />
+                            </Border>
+                            <ContentPresenter VerticalAlignment="Center" RecognizesAccessKey="True" />
+                        </StackPanel>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="ToggleTrack" Property="Background" Value="{StaticResource Lime}" />
+                                <Setter TargetName="ToggleThumb" Property="Fill" Value="#22301A" />
+                                <Setter TargetName="ToggleThumb" Property="HorizontalAlignment" Value="Right" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <DataTemplate x:Key="MonitorLabel">
+            <TextBlock Text="{Binding Label}" TextTrimming="CharacterEllipsis" />
+        </DataTemplate>
+    </Window.Resources>
+
+    <Border BorderBrush="{StaticResource Line}" BorderThickness="1">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="46" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <Border Background="#141618" BorderBrush="{StaticResource Line}" BorderThickness="0,0,0,1">
+                <Grid>
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="16,0,0,0">
+                        <Border Background="{StaticResource Lime}" Width="23" Height="23" CornerRadius="5" Margin="0,0,9,0">
+                            <Path Data="M10,1 L2,9 H7 L5,15 L13,7 H8 Z" Fill="#172311" Width="15" Height="15"
+                                  Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <TextBlock Text="1337res" FontSize="15" FontWeight="Bold" VerticalAlignment="Center" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,5,0">
+                        <Button Style="{StaticResource TitleButton}" Click="Minimize_Click" ToolTip="Minimize" automation:AutomationProperties.Name="Minimize">
+                            <Path Data="M0,5 H10" Stretch="None" Stroke="#B7BEB8" StrokeThickness="1.2" />
+                        </Button>
+                        <Button Style="{StaticResource TitleButton}" Click="Maximize_Click" ToolTip="Maximize or restore" automation:AutomationProperties.Name="Maximize or restore">
+                            <Path Data="M0,0 H10 V10 H0 Z" Stretch="None" Stroke="#B7BEB8" StrokeThickness="1.2" />
+                        </Button>
+                        <Button Style="{StaticResource TitleButton}" Click="Close_Click" ToolTip="Close" automation:AutomationProperties.Name="Close">
+                            <Path Data="M0,0 L10,10 M0,10 L10,0" Stretch="None" Stroke="#B7BEB8" StrokeThickness="1.2" />
+                        </Button>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="184" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Border Background="#141618" BorderBrush="{StaticResource Line}" BorderThickness="0,0,1,0" Padding="13,24,13,17">
+                    <DockPanel>
+                        <Button DockPanel.Dock="Bottom" Click="Tray_Click" ToolTip="Keep profile shortcuts running in the background" automation:AutomationProperties.Name="Hide to tray">
+                            <StackPanel Orientation="Horizontal">
+                                <Path Data="{StaticResource TrayIcon}" Width="16" Height="16" Stretch="Uniform" Stroke="{StaticResource Muted}"
+                                      StrokeThickness="1.4" VerticalAlignment="Center" Margin="0,0,8,0" />
+                                <TextBlock Text="Hide to tray" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </Button>
+                        <StackPanel>
+                            <RadioButton x:Name="DisplayNav" Style="{StaticResource NavItem}" Click="Navigation_Click" IsChecked="True" Tag="Display" automation:AutomationProperties.Name="Display">
+                                <StackPanel Orientation="Horizontal">
+                                    <Path Style="{StaticResource NavIcon}" Data="{StaticResource ScreenIcon}" />
+                                    <TextBlock Text="Display" VerticalAlignment="Center" />
+                                </StackPanel>
+                            </RadioButton>
+                            <RadioButton x:Name="ProfilesNav" Style="{StaticResource NavItem}" Click="Navigation_Click" Tag="Profiles" automation:AutomationProperties.Name="Profiles">
+                                <StackPanel Orientation="Horizontal">
+                                    <Path Style="{StaticResource NavIcon}" Data="{StaticResource StackIcon}" />
+                                    <TextBlock Text="Profiles" VerticalAlignment="Center" />
+                                </StackPanel>
+                            </RadioButton>
+                            <RadioButton x:Name="SettingsNav" Style="{StaticResource NavItem}" Click="Navigation_Click" Tag="Settings" automation:AutomationProperties.Name="Settings">
+                                <StackPanel Orientation="Horizontal">
+                                    <Path Style="{StaticResource NavIcon}" Data="{StaticResource SettingsIcon}" />
+                                    <TextBlock Text="Settings" VerticalAlignment="Center" />
+                                </StackPanel>
+                            </RadioButton>
+                            <RadioButton x:Name="AboutNav" Style="{StaticResource NavItem}" Click="Navigation_Click" Tag="About" automation:AutomationProperties.Name="About">
+                                <StackPanel Orientation="Horizontal">
+                                    <Path Style="{StaticResource NavIcon}" Data="{StaticResource InfoIcon}" />
+                                    <TextBlock Text="About" VerticalAlignment="Center" />
+                                </StackPanel>
+                            </RadioButton>
+                        </StackPanel>
+                    </DockPanel>
+                </Border>
+
+                <Grid Grid.Column="1">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <ScrollViewer x:Name="WorkspaceScroll" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"
+                                  Focusable="False" Padding="28,22,28,22">
+                        <Grid MaxWidth="1210">
+                            <StackPanel x:Name="DisplayPage">
+                                <Grid Margin="0,0,0,19">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel VerticalAlignment="Center" Margin="0,0,14,0">
+                                        <TextBlock Text="Display" Style="{StaticResource PageTitle}" />
+                                        <TextBlock Text="Switch resolution and refresh rate." Style="{StaticResource Description}" />
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Bottom" Margin="0,0,0,2">
+                                        <StackPanel Width="232">
+                                            <TextBlock Text="MONITOR" Style="{StaticResource SmallLabel}" Margin="0,0,0,6" />
+                                            <ComboBox x:Name="DisplayPicker" ItemTemplate="{StaticResource MonitorLabel}" SelectedValuePath="DeviceName"
+                                                      SelectionChanged="DisplayPicker_SelectionChanged" automation:AutomationProperties.Name="Monitor" />
+                                        </StackPanel>
+                                        <Button Click="Refresh_Click" Width="38" Height="38" Padding="0" VerticalAlignment="Bottom" Margin="7,0,0,0"
+                                                ToolTip="Refresh connected monitors and display modes" automation:AutomationProperties.Name="Refresh monitors">
+                                            <Path Data="{StaticResource RefreshIcon}" Stretch="Uniform" Width="16" Height="16"
+                                                  Stroke="{StaticResource Text}" StrokeThickness="1.4" StrokeStartLineCap="Round" StrokeEndLineCap="Round" />
+                                        </Button>
+                                    </StackPanel>
+                                </Grid>
+
+                                <Border Style="{StaticResource CardSurface}" Margin="0,0,0,15" Padding="21,16" BorderBrush="#354034">
+                                    <Border.Background>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                            <GradientStop Color="#1C271D" Offset="0" />
+                                            <GradientStop Color="#181E1B" Offset="0.66" />
+                                            <GradientStop Color="#1D2A1B" Offset="1" />
+                                        </LinearGradientBrush>
+                                    </Border.Background>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel VerticalAlignment="Center" Margin="0,0,10,0">
+                                            <StackPanel Orientation="Horizontal" Margin="0,0,0,2">
+                                                <Ellipse Fill="{StaticResource Lime}" Width="7" Height="7" Margin="0,0,7,0" />
+                                                <TextBlock Text="CURRENT MODE" Style="{StaticResource SmallLabel}" Foreground="{StaticResource Lime}" />
+                                            </StackPanel>
+                                            <TextBlock x:Name="CurrentResolution" Text="—" FontSize="43" FontWeight="Bold" FontFamily="{StaticResource Mono}" TextTrimming="CharacterEllipsis" />
+                                            <TextBlock x:Name="CurrentDetails" Text="Select a monitor" Style="{StaticResource Description}" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" />
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                            <Border BorderBrush="#617947" BorderThickness="1" Background="#202B1D" Width="110" Height="61" CornerRadius="5">
+                                                <Border Margin="5" BorderBrush="#3F5134" BorderThickness="1" CornerRadius="3">
+                                                    <TextBlock x:Name="CurrentRefresh" Text="—" Foreground="{StaticResource Lime}" FontFamily="{StaticResource Mono}"
+                                                               FontSize="15" FontWeight="SemiBold" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                                </Border>
+                                            </Border>
+                                            <Border Width="31" Height="6" Background="#415237" CornerRadius="0,0,3,3" />
+                                            <Border Width="51" Height="2" Background="#617947" CornerRadius="1" />
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="1.17*" />
+                                        <ColumnDefinition Width="14" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <Border Style="{StaticResource CardSurface}">
+                                        <StackPanel>
+                                            <Grid Margin="0,0,0,10">
+                                                <TextBlock Text="Supported modes" Style="{StaticResource CardTitle}" />
+                                                <TextBlock x:Name="ModeCount" Style="{StaticResource SmallLabel}" HorizontalAlignment="Right" VerticalAlignment="Center" />
+                                            </Grid>
+                                            <Grid>
+                                                <TextBox x:Name="ModeFilter" TextChanged="ModeFilter_TextChanged" automation:AutomationProperties.Name="Filter modes" />
+                                                <TextBlock Text="Filter by resolution or Hz" Foreground="{StaticResource Muted}" Margin="11,0,0,0" VerticalAlignment="Center" IsHitTestVisible="False">
+                                                    <TextBlock.Style>
+                                                        <Style TargetType="TextBlock">
+                                                            <Setter Property="Visibility" Value="Collapsed" />
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding Text, ElementName=ModeFilter}" Value="">
+                                                                    <Setter Property="Visibility" Value="Visible" />
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </TextBlock.Style>
+                                                </TextBlock>
+                                            </Grid>
+                                            <Grid Margin="10,11,17,4">
+                                                <TextBlock Text="RESOLUTION" Style="{StaticResource SmallLabel}" />
+                                                <TextBlock Text="REFRESH" Style="{StaticResource SmallLabel}" HorizontalAlignment="Right" />
+                                            </Grid>
+                                            <Grid Height="179">
+                                                <ListBox x:Name="ModeList" SelectionChanged="ModeList_SelectionChanged" SelectedValuePath="Mode"
+                                                         MouseDoubleClick="ModeList_MouseDoubleClick" automation:AutomationProperties.Name="Supported display modes">
+                                                    <ListBox.ItemTemplate>
+                                                        <DataTemplate>
+                                                            <Grid>
+                                                                <TextBlock Text="{Binding Resolution}" FontFamily="{StaticResource Mono}" FontWeight="SemiBold" />
+                                                                <TextBlock Text="{Binding Refresh}" FontFamily="{StaticResource Mono}" HorizontalAlignment="Right" />
+                                                            </Grid>
+                                                        </DataTemplate>
+                                                    </ListBox.ItemTemplate>
+                                                </ListBox>
+                                                <TextBlock x:Name="ModeEmpty" Style="{StaticResource Description}" VerticalAlignment="Center" HorizontalAlignment="Center"
+                                                           IsHitTestVisible="False" />
+                                            </Grid>
+                                            <UniformGrid Columns="2" Margin="0,10,0,0">
+                                                <Button x:Name="ApplySelectedButton" Content="Apply mode" Style="{StaticResource PrimaryButton}" Click="ApplySelected_Click" Margin="0,0,4,0" IsEnabled="False" />
+                                                <Button x:Name="SaveSelectedButton" Content="Save profile" Click="SaveSelected_Click" Margin="4,0,0,0" IsEnabled="False"
+                                                        automation:AutomationProperties.Name="Save selected mode as profile" />
+                                            </UniformGrid>
+                                        </StackPanel>
+                                    </Border>
+
+                                    <Border Grid.Column="2" Style="{StaticResource CardSurface}">
+                                        <Grid>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto" />
+                                                <RowDefinition Height="*" />
+                                                <RowDefinition Height="Auto" />
+                                            </Grid.RowDefinitions>
+                                            <StackPanel>
+                                                <TextBlock Text="Custom resolution" Style="{StaticResource CardTitle}" />
+                                                <TextBlock Text="Enter the width, height and refresh rate you want to try." Style="{StaticResource Description}" Margin="0,7,0,15" />
+                                                <UniformGrid Columns="2">
+                                                    <StackPanel Margin="0,0,4,0">
+                                                        <TextBlock Text="WIDTH (PX)" Style="{StaticResource SmallLabel}" Margin="0,0,0,5" />
+                                                        <TextBox x:Name="CustomWidth" MaxLength="5" automation:AutomationProperties.Name="Custom width in pixels" />
+                                                    </StackPanel>
+                                                    <StackPanel Margin="4,0,0,0">
+                                                        <TextBlock Text="HEIGHT (PX)" Style="{StaticResource SmallLabel}" Margin="0,0,0,5" />
+                                                        <TextBox x:Name="CustomHeight" MaxLength="5" automation:AutomationProperties.Name="Custom height in pixels" />
+                                                    </StackPanel>
+                                                </UniformGrid>
+                                                <TextBlock Text="REFRESH RATE (HZ)" Style="{StaticResource SmallLabel}" Margin="0,11,0,5" />
+                                                <TextBox x:Name="CustomRefresh" MaxLength="4" automation:AutomationProperties.Name="Custom refresh rate in hertz"
+                                                         ToolTip="Enter 0 to use the driver’s default refresh rate." />
+                                            </StackPanel>
+                                            <Border Grid.Row="1" VerticalAlignment="Top" Background="{StaticResource Input}" BorderBrush="{StaticResource Line}"
+                                                    BorderThickness="1" CornerRadius="7" Padding="9" Margin="0,11,0,9">
+                                                <TextBlock Text="Your graphics driver must support the mode. You’ll have 15 seconds to confirm a change." Style="{StaticResource Description}" FontSize="12" />
+                                            </Border>
+                                            <UniformGrid Grid.Row="2" Columns="2">
+                                                <Button x:Name="ApplyCustomButton" Content="Try custom mode" Click="ApplyCustom_Click" Margin="0,0,4,0" IsEnabled="False" />
+                                                <Button x:Name="SaveCustomButton" Content="Save profile" Click="SaveCustom_Click" Margin="4,0,0,0" IsEnabled="False"
+                                                        automation:AutomationProperties.Name="Save custom mode as profile" />
+                                            </UniformGrid>
+                                        </Grid>
+                                    </Border>
+                                </Grid>
+                            </StackPanel>
+
+                            <StackPanel x:Name="ProfilesPage" Visibility="Collapsed">
+                                <TextBlock Text="Profiles" Style="{StaticResource PageTitle}" />
+                                <TextBlock Text="Save a mode and give it an optional shortcut that works across Windows." Style="{StaticResource Description}" Margin="0,0,0,19" />
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="14" />
+                                        <ColumnDefinition Width="1.16*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Border Style="{StaticResource CardSurface}">
+                                        <StackPanel>
+                                            <DockPanel Margin="0,0,0,12">
+                                                <Button DockPanel.Dock="Right" Content="New profile" Click="NewProfile_Click" />
+                                                <TextBlock Text="Saved profiles" Style="{StaticResource CardTitle}" VerticalAlignment="Center" Margin="0,0,5,0" />
+                                            </DockPanel>
+                                            <Grid MinHeight="280" MaxHeight="400">
+                                                <ListBox x:Name="ProfileList" SelectedValuePath="Id" SelectionChanged="ProfileList_SelectionChanged"
+                                                         automation:AutomationProperties.Name="Saved profiles">
+                                                    <ListBox.ItemTemplate>
+                                                        <DataTemplate>
+                                                            <StackPanel Margin="0,2">
+                                                                <TextBlock Text="{Binding Name}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+                                                                <TextBlock Text="{Binding Details}" Foreground="{StaticResource Muted}" FontSize="12"
+                                                                           Margin="0,4,0,0" TextTrimming="CharacterEllipsis" />
+                                                            </StackPanel>
+                                                        </DataTemplate>
+                                                    </ListBox.ItemTemplate>
+                                                </ListBox>
+                                                <TextBlock x:Name="ProfilesEmpty" Text="Your saved profiles will appear here." Style="{StaticResource Description}"
+                                                           VerticalAlignment="Center" HorizontalAlignment="Center" IsHitTestVisible="False" TextAlignment="Center" />
+                                            </Grid>
+                                            <Button x:Name="ApplyProfileButton" Content="Apply selected profile" Click="ApplyProfile_Click"
+                                                    Style="{StaticResource PrimaryButton}" Margin="0,12,0,0" IsEnabled="False" />
+                                        </StackPanel>
+                                    </Border>
+                                    <Border Grid.Column="2" Style="{StaticResource CardSurface}">
+                                        <StackPanel>
+                                            <TextBlock x:Name="ProfileEditorTitle" Text="New profile" Style="{StaticResource CardTitle}" Margin="0,0,0,13" />
+                                            <TextBlock Text="NAME" Style="{StaticResource SmallLabel}" Margin="0,0,0,5" />
+                                            <TextBox x:Name="ProfileName" MaxLength="50" automation:AutomationProperties.Name="Profile name" />
+                                            <TextBlock Text="MONITOR" Style="{StaticResource SmallLabel}" Margin="0,11,0,5" />
+                                            <ComboBox x:Name="ProfileMonitor" ItemTemplate="{StaticResource MonitorLabel}" SelectedValuePath="DeviceName"
+                                                      automation:AutomationProperties.Name="Profile monitor" />
+                                            <UniformGrid Columns="3" Margin="0,11,0,0">
+                                                <StackPanel Margin="0,0,4,0">
+                                                    <TextBlock Text="WIDTH" Style="{StaticResource SmallLabel}" Margin="0,0,0,5" />
+                                                    <TextBox x:Name="ProfileWidth" MaxLength="5" automation:AutomationProperties.Name="Profile width in pixels" />
+                                                </StackPanel>
+                                                <StackPanel Margin="4,0">
+                                                    <TextBlock Text="HEIGHT" Style="{StaticResource SmallLabel}" Margin="0,0,0,5" />
+                                                    <TextBox x:Name="ProfileHeight" MaxLength="5" automation:AutomationProperties.Name="Profile height in pixels" />
+                                                </StackPanel>
+                                                <StackPanel Margin="4,0,0,0">
+                                                    <TextBlock Text="REFRESH (HZ)" Style="{StaticResource SmallLabel}" Margin="0,0,0,5" />
+                                                    <TextBox x:Name="ProfileRefresh" MaxLength="4" automation:AutomationProperties.Name="Profile refresh rate in hertz" />
+                                                </StackPanel>
+                                            </UniformGrid>
+                                            <TextBlock Text="GLOBAL HOTKEY" Style="{StaticResource SmallLabel}" Margin="0,11,0,5" />
+                                            <DockPanel>
+                                                <Button DockPanel.Dock="Right" Content="Clear" Click="ClearHotkey_Click" Margin="7,0,0,0" />
+                                                <TextBox x:Name="ProfileHotkey" IsReadOnly="True" FontFamily="{StaticResource Mono}" PreviewKeyDown="ProfileHotkey_PreviewKeyDown"
+                                                         automation:AutomationProperties.Name="Press a global shortcut" ToolTip="Click here and press your shortcut" />
+                                            </DockPanel>
+                                            <TextBlock Text="Click the field, then press a combination such as Ctrl + Alt + 1." Style="{StaticResource Description}" FontSize="12" Margin="0,5,0,12" />
+                                            <UniformGrid Columns="2">
+                                                <Button Content="Save profile" Style="{StaticResource PrimaryButton}" Click="SaveProfile_Click" Margin="0,0,4,0" />
+                                                <Button x:Name="DeleteProfileButton" Content="Remove profile" Click="DeleteProfile_Click" Margin="4,0,0,0" IsEnabled="False" />
+                                            </UniformGrid>
+                                        </StackPanel>
+                                    </Border>
+                                </Grid>
+                            </StackPanel>
+
+                            <StackPanel x:Name="SettingsPage" Visibility="Collapsed">
+                                <TextBlock Text="Settings" Style="{StaticResource PageTitle}" />
+                                <TextBlock Text="Choose how 1337res runs in the background." Style="{StaticResource Description}" Margin="0,0,0,19" />
+                                <Border Style="{StaticResource CardSurface}" Margin="0,0,0,14">
+                                    <StackPanel>
+                                        <TextBlock Text="Startup and tray" Style="{StaticResource CardTitle}" Margin="0,0,0,16" />
+                                        <CheckBox x:Name="StartupToggle" Content="Start with Windows" Click="StartupToggle_Click" />
+                                        <TextBlock Text="Launch 1337res at sign-in so your profile hotkeys are ready." Style="{StaticResource Description}" Margin="51,3,0,13" />
+                                        <CheckBox x:Name="CloseToTrayToggle" Content="Keep running when the window closes" Click="CloseToTrayToggle_Click" />
+                                        <TextBlock Text="Use the notification-area icon to reopen or quit 1337res." Style="{StaticResource Description}" Margin="51,3,0,0" />
+                                    </StackPanel>
+                                </Border>
+                                <Border Style="{StaticResource CardSurface}">
+                                    <StackPanel>
+                                        <TextBlock Text="Global hotkeys" Style="{StaticResource CardTitle}" />
+                                        <TextBlock Text="Assign a separate hotkey to each saved profile. Shortcuts work while 1337res is running, including in the tray."
+                                                   Style="{StaticResource Description}" Margin="0,7,0,13" />
+                                        <Button Content="Manage profile hotkeys" HorizontalAlignment="Left" Click="ManageHotkeys_Click" />
+                                    </StackPanel>
+                                </Border>
+                            </StackPanel>
+
+                            <StackPanel x:Name="AboutPage" Visibility="Collapsed">
+                                <TextBlock Text="About" Style="{StaticResource PageTitle}" />
+                                <TextBlock Text="A Windows utility for switching display modes." Style="{StaticResource Description}" Margin="0,0,0,19" />
+                                <Border Style="{StaticResource CardSurface}" Padding="24">
+                                    <StackPanel>
+                                        <Border Background="{StaticResource Lime}" Width="45" Height="45" CornerRadius="10" HorizontalAlignment="Left">
+                                            <Path Data="M10,1 L2,9 H7 L5,15 L13,7 H8 Z" Fill="#172311" Width="27" Height="27"
+                                                  Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                        </Border>
+                                        <TextBlock Text="1337res" FontSize="32" FontWeight="Bold" Margin="0,10,0,2" />
+                                        <TextBlock x:Name="VersionLabel" Style="{StaticResource SmallLabel}" />
+                                        <Border Height="1" Background="{StaticResource Line}" Margin="0,19,0,17" />
+                                        <TextBlock Text="Credits" Style="{StaticResource CardTitle}" />
+                                        <TextBlock Text="Created by harm" FontSize="15" FontWeight="SemiBold" Margin="0,8,0,3" />
+                                        <TextBlock Text="Discord username · harm" Style="{StaticResource Description}" Margin="0,0,0,14" />
+                                        <Button Style="{StaticResource PrimaryButton}" HorizontalAlignment="Left" Click="Discord_Click" ToolTip="https://discord.gg/FGk4fnYeCP">
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Text="Join the Discord" VerticalAlignment="Center" />
+                                                <Path Data="{StaticResource ArrowIcon}" Stroke="#15220E" StrokeThickness="1.5" Width="14" Height="14"
+                                                      Stretch="Uniform" VerticalAlignment="Center" Margin="7,0,0,0" />
+                                            </StackPanel>
+                                        </Button>
+                                    </StackPanel>
+                                </Border>
+                            </StackPanel>
+                        </Grid>
+                    </ScrollViewer>
+
+                    <Border Grid.Row="1" x:Name="StatusSurface" Background="#151819" BorderBrush="{StaticResource Line}" BorderThickness="0,1,0,0" Padding="16,8">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Ellipse x:Name="StatusDot" Width="6" Height="6" Fill="{StaticResource Lime}" Margin="0,0,8,0" />
+                            <TextBlock Grid.Column="1" x:Name="StatusMessage" Text="Ready" Foreground="{StaticResource Muted}"
+                                       TextWrapping="Wrap" automation:AutomationProperties.LiveSetting="Polite" />
+                        </Grid>
+                    </Border>
+                </Grid>
+            </Grid>
+        </Grid>
+    </Border>
+</Window>
