@@ -101,8 +101,12 @@ public partial class MainWindow : Window
             : $"{monitors.Count} connected · {activeCount} enabled";
         MonitorHelp.Text = managementError ?? (monitors.Count == 0
             ? "Check the monitor connection, then select Refresh."
-            : "You’ll have 15 seconds to keep monitor changes. At least one monitor must stay enabled.");
+            : activeCount == 1
+                ? LastMonitorHelp
+                : "You’ll have 15 seconds to keep monitor changes.");
     }
+
+    private const string LastMonitorHelp = "Disabling the last monitor turns the screen off. Move the mouse or press a key to wake it.";
 
     private MonitorChoice? FindMonitor(DisplayTarget? target)
     {
@@ -492,12 +496,12 @@ public partial class MainWindow : Window
         public string Name => Monitor.Name;
         public bool IsEnabled => Monitor.IsEnabled;
         public bool CanConfigure => Monitor.IsEnabled && !string.IsNullOrEmpty(Monitor.DeviceName);
-        public bool CanToggle => ManagementError is null && (!Monitor.IsEnabled || ActiveCount > 1);
+        public bool CanToggle => ManagementError is null;
         public string ConfigureLabel => $"Edit resolution for {Name}";
         public string ActionLabel => IsEnabled ? "Disable" : "Enable";
         public string ActionAccessibilityLabel => $"{ActionLabel} {Name}";
         public string StatusLabel => !IsEnabled ? "Disabled" : Monitor.IsPrimary ? "Enabled · Primary" : "Enabled";
-        public string? ActionHelp => ManagementError ?? (CanToggle ? null : "At least one monitor must stay enabled.");
+        public string? ActionHelp => ManagementError ?? (IsEnabled && ActiveCount == 1 ? LastMonitorHelp : null);
     }
 
     private sealed record ModeRow(DisplayMode Mode)

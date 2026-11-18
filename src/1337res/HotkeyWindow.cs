@@ -10,6 +10,9 @@ internal sealed class HotkeyWindow : IDisposable
     private const int WmDeviceChange = 0x0219;
     private const int DbtDevNodesChanged = 0x0007;
     private const int WmHotkey = 0x0312;
+    private const int WmSysCommand = 0x0112;
+    private const int ScMonitorPower = 0xF170;
+    private const int MonitorPowerOff = 2;
     private const int WsPopup = unchecked((int)0x80000000);
     private const int WsExToolWindow = 0x00000080;
     private const uint ModNoRepeat = 0x4000;
@@ -19,6 +22,7 @@ internal sealed class HotkeyWindow : IDisposable
         ExtendedWindowStyle = WsExToolWindow
     });
     private readonly DispatcherTimer _displayTimer = new() { Interval = TimeSpan.FromMilliseconds(350) };
+    private readonly DispatcherTimer _powerOffTimer = new() { Interval = TimeSpan.FromMilliseconds(750) };
     private readonly Dictionary<int, Guid> _bindings = [];
     private int _lastId;
 
@@ -30,10 +34,22 @@ internal sealed class HotkeyWindow : IDisposable
             _displayTimer.Stop();
             DisplaysChanged?.Invoke();
         };
+        _powerOffTimer.Tick += (_, _) =>
+        {
+            _powerOffTimer.Stop();
+            DefWindowProc(_source.Handle, WmSysCommand, ScMonitorPower, MonitorPowerOff);
+        };
     }
 
     public event Action<Guid>? Pressed;
     public event Action? DisplaysChanged;
+
+    public void TurnOffDisplays()
+    {
+        // Apply after the click or key release so the same input doesn't immediately wake the screen.
+        _powerOffTimer.Stop();
+        _powerOffTimer.Start();
+    }
 
     public int Register(Guid profile, Hotkey shortcut)
     {
@@ -77,6 +93,7 @@ internal sealed class HotkeyWindow : IDisposable
     public void Dispose()
     {
         _displayTimer.Stop();
+        _powerOffTimer.Stop();
         foreach (int id in _bindings.Keys.ToArray()) Unregister(id);
         _source.Dispose();
     }
@@ -88,4 +105,7 @@ internal sealed class HotkeyWindow : IDisposable
     [DllImport("user32.dll", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
     private static extern bool UnregisterHotKey(IntPtr window, int id);
+
+    [DllImport("user32.dll", EntryPoint = "DefWindowProcW", ExactSpelling = true)]
+    private static extern IntPtr DefWindowProc(IntPtr window, int message, IntPtr wParam, IntPtr lParam);
 }

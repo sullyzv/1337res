@@ -48,7 +48,7 @@ internal static class MonitorTopology
             .ToArray();
     }
 
-    public static Snapshot SetEnabled(string monitorId, bool enabled)
+    public static Snapshot? SetEnabled(string monitorId, bool enabled)
     {
         var configuration = Query(QueryAllPaths);
         var monitor = ReadMonitors(configuration.Paths).FirstOrDefault(item =>
@@ -68,8 +68,9 @@ internal static class MonitorTopology
         {
             var targets = monitor.Paths.Select(TargetKey).ToHashSet();
             var remaining = activePaths.Where(path => !targets.Contains(TargetKey(path))).ToArray();
+            // A desktop without an active connected path needs display power control.
             if (!remaining.Any(path => path.Target.Available != 0))
-                throw new InvalidOperationException("Leave at least one connected monitor enabled.");
+                return null;
 
             var next = CompactModes(remaining, configuration.Modes);
             RebasePrimary(next);

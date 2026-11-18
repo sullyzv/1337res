@@ -648,7 +648,8 @@
                                                         </Button>
                                                         <Button Content="{Binding ActionLabel}" IsEnabled="{Binding CanToggle}" Click="ToggleMonitor_Click"
                                                                 MinWidth="82" ToolTip="{Binding ActionHelp}" ToolTipService.ShowOnDisabled="True"
-                                                                automation:AutomationProperties.Name="{Binding ActionAccessibilityLabel}" />
+                                                                automation:AutomationProperties.Name="{Binding ActionAccessibilityLabel}"
+                                                                automation:AutomationProperties.HelpText="{Binding ActionHelp}" />
                                                     </WrapPanel>
                                                     <Border DockPanel.Dock="Left" Background="{StaticResource AccentSurface}" BorderBrush="{StaticResource AccentEdge}"
                                                             BorderThickness="1" CornerRadius="8" Width="42" Height="42" Margin="0,0,13,0">

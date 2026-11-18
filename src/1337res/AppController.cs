@@ -148,13 +148,19 @@ public sealed class AppController : IDisposable
 
         CloseIdentifiers();
         MonitorTopology.Snapshot? previous = null;
-        bool kept = ConfirmChange(new ModeConfirmation(monitor, enabled),
-            () => previous = MonitorTopology.SetEnabled(monitor.Id, enabled),
+        bool? kept = ConfirmChange(new ModeConfirmation(monitor, enabled),
+            () => (previous = MonitorTopology.SetEnabled(monitor.Id, enabled)) is not null,
             () => MonitorTopology.Restore(previous!),
             "The previous monitor setup could not be restored. Open Windows Display settings to recover it.",
             useWindowCenter: false);
+        if (kept is null)
+        {
+            Announce("Screen turning off. Move the mouse or press a key to wake it.");
+            _hotkeys.TurnOffDisplays();
+            return;
+        }
         RefreshDisplays();
-        Announce(kept ? $"{monitor.Name} {(enabled ? "enabled" : "disabled")}." : "Restored the previous monitor setup.");
+        Announce(kept.Value ? $"{monitor.Name} {(enabled ? "enabled" : "disabled")}." : "Restored the previous monitor setup.");
     }
 
     public void IdentifyMonitors()
@@ -210,15 +216,19 @@ public sealed class AppController : IDisposable
 
         CloseIdentifiers();
         bool kept = ConfirmChange(new ModeConfirmation(mode),
-            () => DisplayService.Apply(deviceName, mode),
+            () =>
+            {
+                DisplayService.Apply(deviceName, mode);
+                return true;
+            },
             () => DisplayService.Apply(deviceName, previous),
-            "The previous mode could not be restored. Open Windows Display settings to recover it.");
+            "The previous mode could not be restored. Open Windows Display settings to recover it.") == true;
         if (kept) _previousModes[ModeHistoryKey(deviceName)] = previous;
         RefreshDisplays();
         Announce(kept ? $"Display set to {GetCurrent(deviceName)}." : $"Restored {previous}.");
     }
 
-    private bool ConfirmChange(ModeConfirmation confirmation, Action apply, Action revert, string revertError,
+    private bool? ConfirmChange(ModeConfirmation confirmation, Func<bool> apply, Action revert, string revertError,
         bool useWindowCenter = true)
     {
         if (useWindowCenter && _window?.IsVisible == true && _window.IsActive && _window.WindowState != WindowState.Minimized)
@@ -232,8 +242,8 @@ public sealed class AppController : IDisposable
         bool kept = false;
         try
         {
-            apply();
-            applied = true;
+            applied = apply();
+            if (!applied) return null;
             kept = confirmation.ShowDialog() == true;
             return kept;
         }

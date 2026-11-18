@@ -10,7 +10,7 @@
     <AssemblyName>1337res</AssemblyName>
     <Nullable>enable</Nullable>
     <ImplicitUsings>disable</ImplicitUsings>
-    <Version>1.1.0</Version>
+    <Version>1.1.1</Version>
     <Product>1337res</Product>
     <Authors>harm</Authors>
     <Description>Monitor controls, display modes, saved profiles, and global hotkeys.</Description>
