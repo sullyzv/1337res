@@ -1,21 +1,23 @@
 # 1337res
 
-Switch your Windows resolution and refresh rate from a saved profile or a keyboard shortcut.
+See which monitors are connected, turn displays on or off, and switch resolution and refresh rate from a saved profile or keyboard shortcut.
 
 **[Download for Windows x64](https://github.com/sullyzv/1337res/releases/latest/download/1337res-win-x64.exe)** · [Project website](https://sullyzv.github.io/1337res/) · [Release notes and checksums](https://github.com/sullyzv/1337res/releases)
 
 ## Get started
 
 1. Download and open `1337res-win-x64.exe` on Windows 11 or a supported Windows 10 release, x64. The executable includes the .NET runtime and runs without an installer.
-2. Select the monitor you want to change. Pick a listed mode or enter a custom width, height, and refresh rate.
-3. Apply the mode and select **Keep mode** within 15 seconds. Choose **Revert** or let the timer expire to restore the previous mode. Kept changes last for the Windows session.
-4. Save the mode as a named profile and assign a hotkey if you want one. For example, assign `Ctrl` + `Alt` + `1` to your desktop mode and `Ctrl` + `Alt` + `2` to a game mode.
+2. Open **Monitors** to see connected displays and whether each is enabled. Use **Identify monitors** to show a number on each active screen. Select **Enable** or **Disable** next to the display you want to change. 1337res keeps at least one display active.
+3. Open **Display** to change the resolution or refresh rate of an active monitor. Pick a listed mode or enter a custom width, height, and refresh rate.
+4. Confirm a change within 15 seconds to keep it. Choose **Revert** or let the timer expire to restore your previous display settings.
+5. Save a mode as a named profile and assign a hotkey if you want one. For example, assign `Ctrl` + `Alt` + `1` to your desktop mode and `Ctrl` + `Alt` + `2` to a game mode.
 
 ## Profiles and tray controls
 
 - A profile remembers its monitor, resolution, refresh rate, and optional hotkey. Use it from the app, the tray menu, or its shortcut while 1337res is running.
 - **Close to tray** keeps hotkeys active when you close the window. **Start with Windows** opens 1337res in the tray when you sign in. If you move the executable, turn the startup option off and back on from its new location.
 - Custom modes are checked against your graphics driver. If a mode is rejected, choose a listed mode or add the desired mode through your graphics driver’s tools first, if supported.
+- Use **Restore previous resolution** for the selected monitor in the app or from the tray. Kept display changes last for the Windows session.
 - Your profiles are saved locally in `%LOCALAPPDATA%\1337res\settings.json`.
 
 ## Build from source
