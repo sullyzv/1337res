@@ -39,5 +39,3 @@ The desktop source lives in `src/1337res/` and the project website lives in `doc
 ## Credits
 
 Created by **harm**. Discord username `harm`. [Join the Discord](https://discord.gg/FGk4fnYeCP)
-
-1337res is an original Windows utility inspired by [QuickRes by lxzydev](https://github.com/lxzydev/QuickRes).
