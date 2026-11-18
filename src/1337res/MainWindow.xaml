@@ -3,26 +3,29 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
         xmlns:automation="clr-namespace:System.Windows.Automation;assembly=PresentationCore"
-        Title="1337res" Width="1220" Height="820" MinWidth="870" MinHeight="660"
-        WindowStartupLocation="CenterScreen" Background="#101114" Foreground="#F1F3EF"
+        Title="1337res" Icon="1337res.ico" Width="1220" Height="820" MinWidth="870" MinHeight="660"
+        WindowStartupLocation="CenterScreen" Background="#080809" Foreground="#FFFFFF"
         FontFamily="Segoe UI" FontSize="13" UseLayoutRounding="True" TextOptions.TextFormattingMode="Display">
     <shell:WindowChrome.WindowChrome>
         <shell:WindowChrome CaptionHeight="46" GlassFrameThickness="0" ResizeBorderThickness="5" CornerRadius="0" />
     </shell:WindowChrome.WindowChrome>
 
     <Window.Resources>
-        <SolidColorBrush x:Key="Text" Color="#F1F3EF" />
-        <SolidColorBrush x:Key="Muted" Color="#A2AAA5" />
-        <SolidColorBrush x:Key="Line" Color="#2B3031" />
-        <SolidColorBrush x:Key="Card" Color="#181B1D" />
-        <SolidColorBrush x:Key="Input" Color="#141719" />
-        <SolidColorBrush x:Key="Hover" Color="#272D2C" />
-        <SolidColorBrush x:Key="Lime" Color="#C4FA65" />
-        <SolidColorBrush x:Key="LimeDark" Color="#222F20" />
+        <SolidColorBrush x:Key="Text" Color="#FFFFFF" />
+        <SolidColorBrush x:Key="Muted" Color="#C8BFCE" />
+        <SolidColorBrush x:Key="Line" Color="#322A3C" />
+        <SolidColorBrush x:Key="Card" Color="#111014" />
+        <SolidColorBrush x:Key="Input" Color="#0A090C" />
+        <SolidColorBrush x:Key="Hover" Color="#25202C" />
+        <SolidColorBrush x:Key="Accent" Color="#D8BEFF" />
+        <SolidColorBrush x:Key="AccentSurface" Color="#251838" />
+        <SolidColorBrush x:Key="AccentAction" Color="#4D2B77" />
+        <SolidColorBrush x:Key="AccentEdge" Color="#75519D" />
         <SolidColorBrush x:Key="Error" Color="#FFADA9" />
         <FontFamily x:Key="Mono">Cascadia Mono, Consolas</FontFamily>
 
         <Geometry x:Key="ScreenIcon">M2,3 H18 V14 H2 Z M10,14 V18 M6,18 H14</Geometry>
+        <Geometry x:Key="MonitorsIcon">M2,7 H13 V15 H2 Z M7.5,15 V18 M4.5,18 H10.5 M6,4 V2 H18 V11 H16</Geometry>
         <Geometry x:Key="StackIcon">M10,2 L18,6 L10,10 L2,6 Z M2,10 L10,14 L18,10 M2,14 L10,18 L18,14</Geometry>
         <Geometry x:Key="SettingsIcon">M3,5 H17 M3,10 H17 M3,15 H17 M7,3 V7 M13,8 V12 M8,13 V17</Geometry>
         <Geometry x:Key="InfoIcon">M10,2 A8,8 0 1 1 9.99,2 Z M10,9 V14 M10,6 V7</Geometry>
@@ -59,14 +62,14 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate>
-                        <Border Margin="2" CornerRadius="6" BorderBrush="{StaticResource Lime}" BorderThickness="1" />
+                        <Border Margin="2" CornerRadius="6" BorderBrush="{StaticResource Accent}" BorderThickness="1" />
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
         </Style>
         <Style TargetType="Button">
             <Setter Property="Foreground" Value="{StaticResource Text}" />
-            <Setter Property="Background" Value="#242929" />
+            <Setter Property="Background" Value="#1B1721" />
             <Setter Property="BorderBrush" Value="{StaticResource Line}" />
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="Padding" Value="13,8" />
@@ -83,7 +86,7 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="ButtonSurface" Property="BorderBrush" Value="#697568" />
+                                <Setter TargetName="ButtonSurface" Property="BorderBrush" Value="#8264A5" />
                             </Trigger>
                             <Trigger Property="IsPressed" Value="True">
                                 <Setter TargetName="ButtonSurface" Property="Opacity" Value="0.75" />
@@ -98,9 +101,8 @@
             </Setter>
         </Style>
         <Style x:Key="PrimaryButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
-            <Setter Property="Foreground" Value="#15220E" />
-            <Setter Property="Background" Value="{StaticResource Lime}" />
-            <Setter Property="BorderBrush" Value="{StaticResource Lime}" />
+            <Setter Property="Background" Value="{StaticResource AccentAction}" />
+            <Setter Property="BorderBrush" Value="{StaticResource AccentEdge}" />
         </Style>
         <Style x:Key="TitleButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
             <Setter Property="Width" Value="42" />
@@ -132,9 +134,9 @@
                                 <Setter TargetName="NavSurface" Property="Background" Value="{StaticResource Hover}" />
                             </Trigger>
                             <Trigger Property="IsChecked" Value="True">
-                                <Setter TargetName="NavSurface" Property="Background" Value="{StaticResource LimeDark}" />
-                                <Setter TargetName="NavSurface" Property="BorderBrush" Value="#394B32" />
-                                <Setter Property="Foreground" Value="{StaticResource Lime}" />
+                                <Setter TargetName="NavSurface" Property="Background" Value="{StaticResource AccentSurface}" />
+                                <Setter TargetName="NavSurface" Property="BorderBrush" Value="#523575" />
+                                <Setter Property="Foreground" Value="{StaticResource Accent}" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -155,8 +157,8 @@
         <Style TargetType="TextBox">
             <Setter Property="Foreground" Value="{StaticResource Text}" />
             <Setter Property="Background" Value="{StaticResource Input}" />
-            <Setter Property="CaretBrush" Value="{StaticResource Lime}" />
-            <Setter Property="SelectionBrush" Value="#546E37" />
+            <Setter Property="CaretBrush" Value="{StaticResource Accent}" />
+            <Setter Property="SelectionBrush" Value="#694693" />
             <Setter Property="BorderBrush" Value="{StaticResource Line}" />
             <Setter Property="Padding" Value="10,0" />
             <Setter Property="MinHeight" Value="36" />
@@ -170,7 +172,7 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsKeyboardFocused" Value="True">
-                                <Setter TargetName="InputSurface" Property="BorderBrush" Value="{StaticResource Lime}" />
+                                <Setter TargetName="InputSurface" Property="BorderBrush" Value="{StaticResource Accent}" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -192,7 +194,7 @@
                                 <Setter TargetName="ChoiceSurface" Property="Background" Value="{StaticResource Hover}" />
                             </Trigger>
                             <Trigger Property="IsSelected" Value="True">
-                                <Setter Property="Foreground" Value="{StaticResource Lime}" />
+                                <Setter Property="Foreground" Value="{StaticResource Accent}" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -220,7 +222,7 @@
                                         </Border>
                                         <ControlTemplate.Triggers>
                                             <Trigger Property="IsMouseOver" Value="True">
-                                                <Setter TargetName="ToggleSurface" Property="BorderBrush" Value="#697568" />
+                                                <Setter TargetName="ToggleSurface" Property="BorderBrush" Value="#8264A5" />
                                             </Trigger>
                                         </ControlTemplate.Triggers>
                                     </ControlTemplate>
@@ -238,7 +240,7 @@
                                     </ScrollViewer>
                                 </Border>
                             </Popup>
-                            <Border x:Name="ChoiceFocus" Visibility="Collapsed" BorderBrush="{StaticResource Lime}" BorderThickness="1"
+                            <Border x:Name="ChoiceFocus" Visibility="Collapsed" BorderBrush="{StaticResource Accent}" BorderThickness="1"
                                     CornerRadius="7" IsHitTestVisible="False" />
                         </Grid>
                         <ControlTemplate.Triggers>
@@ -272,9 +274,9 @@
                                 <Setter TargetName="RowSurface" Property="Background" Value="{StaticResource Hover}" />
                             </Trigger>
                             <Trigger Property="IsSelected" Value="True">
-                                <Setter TargetName="RowSurface" Property="Background" Value="{StaticResource LimeDark}" />
-                                <Setter TargetName="RowSurface" Property="BorderBrush" Value="#394B32" />
-                                <Setter Property="Foreground" Value="{StaticResource Lime}" />
+                                <Setter TargetName="RowSurface" Property="Background" Value="{StaticResource AccentSurface}" />
+                                <Setter TargetName="RowSurface" Property="BorderBrush" Value="#523575" />
+                                <Setter Property="Foreground" Value="{StaticResource Accent}" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -302,13 +304,13 @@
                                     <Thumb>
                                         <Thumb.Template>
                                             <ControlTemplate TargetType="Thumb">
-                                                <Border x:Name="Grip" Margin="2,0" Background="#535D57" CornerRadius="3" />
+                                                <Border x:Name="Grip" Margin="2,0" Background="#625271" CornerRadius="3" />
                                                 <ControlTemplate.Triggers>
                                                     <Trigger Property="IsMouseOver" Value="True">
-                                                        <Setter TargetName="Grip" Property="Background" Value="#8D9C8B" />
+                                                        <Setter TargetName="Grip" Property="Background" Value="#9E87B6" />
                                                     </Trigger>
                                                     <Trigger Property="IsDragging" Value="True">
-                                                        <Setter TargetName="Grip" Property="Background" Value="{StaticResource Lime}" />
+                                                        <Setter TargetName="Grip" Property="Background" Value="{StaticResource Accent}" />
                                                     </Trigger>
                                                 </ControlTemplate.Triggers>
                                             </ControlTemplate>
@@ -332,16 +334,16 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="CheckBox">
                         <StackPanel Orientation="Horizontal" Background="Transparent">
-                            <Border x:Name="ToggleTrack" Width="39" Height="23" CornerRadius="12" Background="#2D3433" Margin="0,0,12,0">
-                                <Ellipse x:Name="ToggleThumb" Width="15" Height="15" Fill="#A2AAA5" Margin="4,0"
+                            <Border x:Name="ToggleTrack" Width="39" Height="23" CornerRadius="12" Background="#362A41" Margin="0,0,12,0">
+                                <Ellipse x:Name="ToggleThumb" Width="15" Height="15" Fill="#C8BFCE" Margin="4,0"
                                          HorizontalAlignment="Left" VerticalAlignment="Center" />
                             </Border>
                             <ContentPresenter VerticalAlignment="Center" RecognizesAccessKey="True" />
                         </StackPanel>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsChecked" Value="True">
-                                <Setter TargetName="ToggleTrack" Property="Background" Value="{StaticResource Lime}" />
-                                <Setter TargetName="ToggleThumb" Property="Fill" Value="#22301A" />
+                                <Setter TargetName="ToggleTrack" Property="Background" Value="{StaticResource Accent}" />
+                                <Setter TargetName="ToggleThumb" Property="Fill" Value="#240E41" />
                                 <Setter TargetName="ToggleThumb" Property="HorizontalAlignment" Value="Right" />
                             </Trigger>
                         </ControlTemplate.Triggers>
@@ -362,24 +364,22 @@
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
-            <Border Background="#141618" BorderBrush="{StaticResource Line}" BorderThickness="0,0,0,1">
+            <Border Background="#0D0B10" BorderBrush="{StaticResource Line}" BorderThickness="0,0,0,1">
                 <Grid>
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="16,0,0,0">
-                        <Border Background="{StaticResource Lime}" Width="23" Height="23" CornerRadius="5" Margin="0,0,9,0">
-                            <Path Data="M10,1 L2,9 H7 L5,15 L13,7 H8 Z" Fill="#172311" Width="15" Height="15"
-                                  Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                        </Border>
+                        <Image Source="1337res.ico" Width="24" Height="24" Margin="0,0,9,0"
+                               RenderOptions.BitmapScalingMode="HighQuality" />
                         <TextBlock Text="1337res" FontSize="15" FontWeight="Bold" VerticalAlignment="Center" />
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,5,0">
                         <Button Style="{StaticResource TitleButton}" Click="Minimize_Click" ToolTip="Minimize" automation:AutomationProperties.Name="Minimize">
-                            <Path Data="M0,5 H10" Stretch="None" Stroke="#B7BEB8" StrokeThickness="1.2" />
+                            <Path Data="M0,5 H10" Stretch="None" Stroke="#D7CDDF" StrokeThickness="1.2" />
                         </Button>
                         <Button Style="{StaticResource TitleButton}" Click="Maximize_Click" ToolTip="Maximize or restore" automation:AutomationProperties.Name="Maximize or restore">
-                            <Path Data="M0,0 H10 V10 H0 Z" Stretch="None" Stroke="#B7BEB8" StrokeThickness="1.2" />
+                            <Path Data="M0,0 H10 V10 H0 Z" Stretch="None" Stroke="#D7CDDF" StrokeThickness="1.2" />
                         </Button>
                         <Button Style="{StaticResource TitleButton}" Click="Close_Click" ToolTip="Close" automation:AutomationProperties.Name="Close">
-                            <Path Data="M0,0 L10,10 M0,10 L10,0" Stretch="None" Stroke="#B7BEB8" StrokeThickness="1.2" />
+                            <Path Data="M0,0 L10,10 M0,10 L10,0" Stretch="None" Stroke="#D7CDDF" StrokeThickness="1.2" />
                         </Button>
                     </StackPanel>
                 </Grid>
@@ -390,7 +390,7 @@
                     <ColumnDefinition Width="184" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
-                <Border Background="#141618" BorderBrush="{StaticResource Line}" BorderThickness="0,0,1,0" Padding="13,24,13,17">
+                <Border Background="#0D0B10" BorderBrush="{StaticResource Line}" BorderThickness="0,0,1,0" Padding="13,24,13,17">
                     <DockPanel>
                         <Button DockPanel.Dock="Bottom" Click="Tray_Click" ToolTip="Keep profile shortcuts running in the background" automation:AutomationProperties.Name="Hide to tray">
                             <StackPanel Orientation="Horizontal">
@@ -403,7 +403,13 @@
                             <RadioButton x:Name="DisplayNav" Style="{StaticResource NavItem}" Click="Navigation_Click" IsChecked="True" Tag="Display" automation:AutomationProperties.Name="Display">
                                 <StackPanel Orientation="Horizontal">
                                     <Path Style="{StaticResource NavIcon}" Data="{StaticResource ScreenIcon}" />
-                                    <TextBlock Text="Display" VerticalAlignment="Center" />
+                                    <TextBlock Text="Resolution" VerticalAlignment="Center" />
+                                </StackPanel>
+                            </RadioButton>
+                            <RadioButton x:Name="MonitorsNav" Style="{StaticResource NavItem}" Click="Navigation_Click" Tag="Monitors" automation:AutomationProperties.Name="Monitors">
+                                <StackPanel Orientation="Horizontal">
+                                    <Path Style="{StaticResource NavIcon}" Data="{StaticResource MonitorsIcon}" />
+                                    <TextBlock Text="Monitors" VerticalAlignment="Center" />
                                 </StackPanel>
                             </RadioButton>
                             <RadioButton x:Name="ProfilesNav" Style="{StaticResource NavItem}" Click="Navigation_Click" Tag="Profiles" automation:AutomationProperties.Name="Profiles">
@@ -443,8 +449,8 @@
                                         <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
                                     <StackPanel VerticalAlignment="Center" Margin="0,0,14,0">
-                                        <TextBlock Text="Display" Style="{StaticResource PageTitle}" />
-                                        <TextBlock Text="Switch resolution and refresh rate." Style="{StaticResource Description}" />
+                                        <TextBlock Text="Resolution" Style="{StaticResource PageTitle}" />
+                                        <TextBlock Text="Choose a monitor, then pick a resolution and refresh rate." Style="{StaticResource Description}" />
                                     </StackPanel>
                                     <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Bottom" Margin="0,0,0,2">
                                         <StackPanel Width="232">
@@ -460,37 +466,49 @@
                                     </StackPanel>
                                 </Grid>
 
-                                <Border Style="{StaticResource CardSurface}" Margin="0,0,0,15" Padding="21,16" BorderBrush="#354034">
+                                <Border Style="{StaticResource CardSurface}" Margin="0,0,0,15" Padding="21,16" BorderBrush="#47305E">
                                     <Border.Background>
                                         <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                                            <GradientStop Color="#1C271D" Offset="0" />
-                                            <GradientStop Color="#181E1B" Offset="0.66" />
-                                            <GradientStop Color="#1D2A1B" Offset="1" />
+                                            <GradientStop Color="#221630" Offset="0" />
+                                            <GradientStop Color="#120F17" Offset="0.66" />
+                                            <GradientStop Color="#1A1126" Offset="1" />
                                         </LinearGradientBrush>
                                     </Border.Background>
                                     <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                        </Grid.RowDefinitions>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="*" />
                                             <ColumnDefinition Width="Auto" />
                                         </Grid.ColumnDefinitions>
                                         <StackPanel VerticalAlignment="Center" Margin="0,0,10,0">
                                             <StackPanel Orientation="Horizontal" Margin="0,0,0,2">
-                                                <Ellipse Fill="{StaticResource Lime}" Width="7" Height="7" Margin="0,0,7,0" />
-                                                <TextBlock Text="CURRENT MODE" Style="{StaticResource SmallLabel}" Foreground="{StaticResource Lime}" />
+                                                <Ellipse Fill="{StaticResource Accent}" Width="7" Height="7" Margin="0,0,7,0" />
+                                                <TextBlock Text="CURRENT MODE" Style="{StaticResource SmallLabel}" Foreground="{StaticResource Accent}" />
                                             </StackPanel>
                                             <TextBlock x:Name="CurrentResolution" Text="—" FontSize="43" FontWeight="Bold" FontFamily="{StaticResource Mono}" TextTrimming="CharacterEllipsis" />
                                             <TextBlock x:Name="CurrentDetails" Text="Select a monitor" Style="{StaticResource Description}" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" />
                                         </StackPanel>
                                         <StackPanel Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center">
-                                            <Border BorderBrush="#617947" BorderThickness="1" Background="#202B1D" Width="110" Height="61" CornerRadius="5">
-                                                <Border Margin="5" BorderBrush="#3F5134" BorderThickness="1" CornerRadius="3">
-                                                    <TextBlock x:Name="CurrentRefresh" Text="—" Foreground="{StaticResource Lime}" FontFamily="{StaticResource Mono}"
+                                            <Border BorderBrush="#7858A1" BorderThickness="1" Background="#1E132C" Width="110" Height="61" CornerRadius="5">
+                                                <Border Margin="5" BorderBrush="#513670" BorderThickness="1" CornerRadius="3">
+                                                    <TextBlock x:Name="CurrentRefresh" Text="—" Foreground="{StaticResource Accent}" FontFamily="{StaticResource Mono}"
                                                                FontSize="15" FontWeight="SemiBold" VerticalAlignment="Center" HorizontalAlignment="Center" />
                                                 </Border>
                                             </Border>
-                                            <Border Width="31" Height="6" Background="#415237" CornerRadius="0,0,3,3" />
-                                            <Border Width="51" Height="2" Background="#617947" CornerRadius="1" />
+                                            <Border Width="31" Height="6" Background="#513670" CornerRadius="0,0,3,3" />
+                                            <Border Width="51" Height="2" Background="#7858A1" CornerRadius="1" />
                                         </StackPanel>
+                                        <WrapPanel Grid.Row="1" Grid.ColumnSpan="2" Margin="0,12,0,0">
+                                            <Button x:Name="RestoreModeButton" Content="Restore previous mode" Click="RestorePreviousMode_Click"
+                                                    IsEnabled="False" Margin="0,0,7,0" Padding="11,5" MinHeight="32"
+                                                    ToolTip="Restore the display mode from before the last change you kept in 1337res."
+                                                    ToolTipService.ShowOnDisabled="True" />
+                                            <Button x:Name="CopyModeButton" Content="Copy current mode" Click="CopyCurrentMode_Click"
+                                                    IsEnabled="False" Padding="11,5" MinHeight="32" />
+                                        </WrapPanel>
                                     </Grid>
                                 </Border>
 
@@ -509,7 +527,7 @@
                                             </Grid>
                                             <Grid>
                                                 <TextBox x:Name="ModeFilter" TextChanged="ModeFilter_TextChanged" automation:AutomationProperties.Name="Filter modes" />
-                                                <TextBlock Text="Filter by resolution or Hz" Foreground="{StaticResource Muted}" Margin="11,0,0,0" VerticalAlignment="Center" IsHitTestVisible="False">
+                                                <TextBlock Text="Search, e.g. 1920x1080 or 144 Hz" Foreground="{StaticResource Muted}" Margin="11,0,0,0" VerticalAlignment="Center" IsHitTestVisible="False" TextTrimming="CharacterEllipsis">
                                                     <TextBlock.Style>
                                                         <Style TargetType="TextBlock">
                                                             <Setter Property="Visibility" Value="Collapsed" />
@@ -522,6 +540,8 @@
                                                     </TextBlock.Style>
                                                 </TextBlock>
                                             </Grid>
+                                            <CheckBox x:Name="MatchAspectRatio" Content="Match current aspect ratio" Click="MatchAspectRatio_Click"
+                                                      Margin="0,9,0,0" ToolTip="Show modes with the same proportions as the active resolution." />
                                             <Grid Margin="10,11,17,4">
                                                 <TextBlock Text="RESOLUTION" Style="{StaticResource SmallLabel}" />
                                                 <TextBlock Text="REFRESH" Style="{StaticResource SmallLabel}" HorizontalAlignment="Right" />
@@ -585,6 +605,79 @@
                                         </Grid>
                                     </Border>
                                 </Grid>
+                            </StackPanel>
+
+                            <StackPanel x:Name="MonitorsPage" Visibility="Collapsed">
+                                <DockPanel Margin="0,0,0,19" LastChildFill="True">
+                                    <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center" Margin="14,0,0,0">
+                                        <Button x:Name="IdentifyMonitorsButton" Content="Identify monitors" Click="IdentifyMonitors_Click" Margin="0,0,7,0"
+                                                ToolTip="Show a label on each active monitor." />
+                                        <Button Content="Refresh" Click="Refresh_Click" ToolTip="Check Windows for connected monitors again." />
+                                    </StackPanel>
+                                    <StackPanel>
+                                        <TextBlock Text="Monitors" Style="{StaticResource PageTitle}" />
+                                        <TextBlock Text="See which connected monitors are on and change which ones Windows uses."
+                                                   Style="{StaticResource Description}" />
+                                    </StackPanel>
+                                </DockPanel>
+                                <Border Style="{StaticResource CardSurface}" Padding="18,15" Margin="0,0,0,12"
+                                        Background="{StaticResource AccentSurface}" BorderBrush="{StaticResource AccentEdge}">
+                                    <StackPanel>
+                                        <TextBlock x:Name="MonitorSummary" Style="{StaticResource CardTitle}" />
+                                        <TextBlock x:Name="MonitorHelp" Style="{StaticResource Description}" Margin="0,4,0,0" />
+                                    </StackPanel>
+                                </Border>
+                                <ItemsControl x:Name="MonitorCards" automation:AutomationProperties.Name="Connected monitors">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border Style="{StaticResource CardSurface}" Margin="0,0,0,10" Padding="15">
+                                                <DockPanel LastChildFill="True">
+                                                    <WrapPanel DockPanel.Dock="Right" VerticalAlignment="Center" Margin="10,0,0,0">
+                                                        <Button Content="Edit resolution" Click="ConfigureMonitor_Click" Margin="0,0,7,0"
+                                                                automation:AutomationProperties.Name="{Binding ConfigureLabel}">
+                                                            <Button.Style>
+                                                                <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                                                                    <Setter Property="Visibility" Value="Collapsed" />
+                                                                    <Style.Triggers>
+                                                                        <DataTrigger Binding="{Binding CanConfigure}" Value="True">
+                                                                            <Setter Property="Visibility" Value="Visible" />
+                                                                        </DataTrigger>
+                                                                    </Style.Triggers>
+                                                                </Style>
+                                                            </Button.Style>
+                                                        </Button>
+                                                        <Button Content="{Binding ActionLabel}" IsEnabled="{Binding CanToggle}" Click="ToggleMonitor_Click"
+                                                                MinWidth="82" ToolTip="{Binding ActionHelp}" ToolTipService.ShowOnDisabled="True"
+                                                                automation:AutomationProperties.Name="{Binding ActionAccessibilityLabel}" />
+                                                    </WrapPanel>
+                                                    <Border DockPanel.Dock="Left" Background="{StaticResource AccentSurface}" BorderBrush="{StaticResource AccentEdge}"
+                                                            BorderThickness="1" CornerRadius="8" Width="42" Height="42" Margin="0,0,13,0">
+                                                        <Path Data="{StaticResource ScreenIcon}" Width="21" Height="21" Stretch="Uniform"
+                                                              Stroke="{StaticResource Accent}" StrokeThickness="1.45" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                                    </Border>
+                                                    <StackPanel VerticalAlignment="Center">
+                                                        <TextBlock Text="{Binding Name}" Style="{StaticResource CardTitle}" FontSize="16" TextTrimming="CharacterEllipsis" />
+                                                        <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+                                                            <Ellipse Width="6" Height="6" Margin="0,0,6,0" VerticalAlignment="Center">
+                                                                <Ellipse.Style>
+                                                                    <Style TargetType="Ellipse">
+                                                                        <Setter Property="Fill" Value="{StaticResource Muted}" />
+                                                                        <Style.Triggers>
+                                                                            <DataTrigger Binding="{Binding IsEnabled}" Value="True">
+                                                                                <Setter Property="Fill" Value="{StaticResource Accent}" />
+                                                                            </DataTrigger>
+                                                                        </Style.Triggers>
+                                                                    </Style>
+                                                                </Ellipse.Style>
+                                                            </Ellipse>
+                                                            <TextBlock Text="{Binding StatusLabel}" Style="{StaticResource Description}" FontSize="12" />
+                                                        </StackPanel>
+                                                    </StackPanel>
+                                                </DockPanel>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
                             </StackPanel>
 
                             <StackPanel x:Name="ProfilesPage" Visibility="Collapsed">
@@ -687,9 +780,9 @@
                                 <TextBlock Text="A Windows utility for switching display modes." Style="{StaticResource Description}" Margin="0,0,0,19" />
                                 <Border Style="{StaticResource CardSurface}" Padding="24">
                                     <StackPanel>
-                                        <Border Background="{StaticResource Lime}" Width="45" Height="45" CornerRadius="10" HorizontalAlignment="Left">
-                                            <Path Data="M10,1 L2,9 H7 L5,15 L13,7 H8 Z" Fill="#172311" Width="27" Height="27"
-                                                  Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                        <Border Background="{StaticResource AccentSurface}" BorderBrush="{StaticResource AccentEdge}"
+                                                BorderThickness="1" Width="62" Height="62" CornerRadius="12" HorizontalAlignment="Left">
+                                            <Image Source="1337res.ico" Width="48" Height="48" RenderOptions.BitmapScalingMode="HighQuality" />
                                         </Border>
                                         <TextBlock Text="1337res" FontSize="32" FontWeight="Bold" Margin="0,10,0,2" />
                                         <TextBlock x:Name="VersionLabel" Style="{StaticResource SmallLabel}" />
@@ -700,7 +793,7 @@
                                         <Button Style="{StaticResource PrimaryButton}" HorizontalAlignment="Left" Click="Discord_Click" ToolTip="https://discord.gg/FGk4fnYeCP">
                                             <StackPanel Orientation="Horizontal">
                                                 <TextBlock Text="Join the Discord" VerticalAlignment="Center" />
-                                                <Path Data="{StaticResource ArrowIcon}" Stroke="#15220E" StrokeThickness="1.5" Width="14" Height="14"
+                                                <Path Data="{StaticResource ArrowIcon}" Stroke="#FFFFFF" StrokeThickness="1.5" Width="14" Height="14"
                                                       Stretch="Uniform" VerticalAlignment="Center" Margin="7,0,0,0" />
                                             </StackPanel>
                                         </Button>
@@ -710,13 +803,13 @@
                         </Grid>
                     </ScrollViewer>
 
-                    <Border Grid.Row="1" x:Name="StatusSurface" Background="#151819" BorderBrush="{StaticResource Line}" BorderThickness="0,1,0,0" Padding="16,8">
+                    <Border Grid.Row="1" x:Name="StatusSurface" Background="#0D0B10" BorderBrush="{StaticResource Line}" BorderThickness="0,1,0,0" Padding="16,8">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
-                            <Ellipse x:Name="StatusDot" Width="6" Height="6" Fill="{StaticResource Lime}" Margin="0,0,8,0" />
+                            <Ellipse x:Name="StatusDot" Width="6" Height="6" Fill="{StaticResource Accent}" Margin="0,0,8,0" />
                             <TextBlock Grid.Column="1" x:Name="StatusMessage" Text="Ready" Foreground="{StaticResource Muted}"
                                        TextWrapping="Wrap" automation:AutomationProperties.LiveSetting="Polite" />
                         </Grid>

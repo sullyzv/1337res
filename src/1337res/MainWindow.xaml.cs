@@ -50,7 +50,7 @@ public partial class MainWindow : Window
 
         StatusMessage.Text = message;
         StatusMessage.Foreground = (System.Windows.Media.Brush)FindResource(isError ? "Error" : "Muted");
-        StatusDot.Fill = (System.Windows.Media.Brush)FindResource(isError ? "Error" : "Lime");
+        StatusDot.Fill = (System.Windows.Media.Brush)FindResource(isError ? "Error" : "Accent");
         (UIElementAutomationPeer.FromElement(StatusMessage) ?? UIElementAutomationPeer.CreatePeerForElement(StatusMessage))
             ?.RaiseAutomationEvent(AutomationEvents.LiveRegionChanged);
     }
@@ -71,6 +71,7 @@ public partial class MainWindow : Window
             DisplayPicker.ItemsSource = _monitors;
             DisplayPicker.SelectedItem = monitor;
             DisplayPicker.IsEnabled = _monitors.Count > 0;
+            RefreshMonitorCards();
             ProfileList.ItemsSource = _controller.Profiles.Select(item => new ProfileRow(item)).ToArray();
             ProfileList.SelectedValue = _editingProfileId;
             ProfilesEmpty.Visibility = _controller.Profiles.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
@@ -87,12 +88,28 @@ public partial class MainWindow : Window
         RefreshDisplayData(previousMonitor != monitor?.Target);
     }
 
+    private void RefreshMonitorCards()
+    {
+        var monitors = _controller.Monitors;
+        int activeCount = monitors.Count(monitor => monitor.IsEnabled);
+        string? managementError = _controller.MonitorManagementError;
+
+        MonitorCards.ItemsSource = monitors.Select(monitor => new MonitorCard(monitor, activeCount, managementError)).ToArray();
+        IdentifyMonitorsButton.IsEnabled = activeCount > 0 && managementError is null;
+        MonitorSummary.Text = monitors.Count == 0
+            ? "No connected monitors found"
+            : $"{monitors.Count} connected · {activeCount} enabled";
+        MonitorHelp.Text = managementError ?? (monitors.Count == 0
+            ? "Check the monitor connection, then select Refresh."
+            : "You’ll have 15 seconds to keep monitor changes. At least one monitor must stay enabled.");
+    }
+
     private MonitorChoice? FindMonitor(DisplayTarget? target)
     {
         if (target is null) return null;
         return string.IsNullOrEmpty(target.StableId)
-            ? _monitors.FirstOrDefault(choice => choice.Target.DeviceName == target.DeviceName)
-            : _monitors.FirstOrDefault(choice => choice.Target.StableId == target.StableId);
+            ? _monitors.FirstOrDefault(choice => string.Equals(choice.Target.DeviceName, target.DeviceName, StringComparison.OrdinalIgnoreCase))
+            : _monitors.FirstOrDefault(choice => string.Equals(choice.Target.StableId, target.StableId, StringComparison.OrdinalIgnoreCase));
     }
 
     private void DisplayPicker_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -125,11 +142,14 @@ public partial class MainWindow : Window
         {
             CurrentResolution.Text = "—";
             CurrentRefresh.Text = "—";
-            CurrentDetails.Text = monitor is null ? "No connected monitor found" : "Current mode unavailable";
+            CurrentDetails.Text = monitor is null ? "No enabled monitor found" : "Current mode unavailable";
         }
 
         ApplyCustomButton.IsEnabled = monitor is not null;
         SaveCustomButton.IsEnabled = monitor is not null;
+        CopyModeButton.IsEnabled = _currentMode is not null;
+        RestoreModeButton.IsEnabled = monitor is not null && _controller.CanRestorePreviousMode(monitor.DeviceName);
+        MatchAspectRatio.IsEnabled = _currentMode is not null;
         if (fillCustomFields) FillModeFields(_currentMode, CustomWidth, CustomHeight, CustomRefresh);
         UpdateModeFilter(fillCustomFields ? _currentMode : null);
     }
@@ -147,13 +167,18 @@ public partial class MainWindow : Window
         if (_ready) UpdateModeFilter();
     }
 
+    private void MatchAspectRatio_Click(object sender, RoutedEventArgs e) => UpdateModeFilter();
+
     private void UpdateModeFilter(DisplayMode? preferred = null)
     {
         var selected = preferred ?? (ModeList.SelectedItem as ModeRow)?.Mode ?? _currentMode;
         string search = NormalizeSearch(ModeFilter.Text);
-        var matching = search.Length == 0
+        var aspect = MatchAspectRatio.IsChecked == true ? _currentMode : null;
+        var matching = search.Length == 0 && aspect is null
             ? _modes
-            : _modes.Where(row => row.SearchText.Contains(search, StringComparison.OrdinalIgnoreCase)).ToArray();
+            : _modes.Where(row => row.SearchText.Contains(search, StringComparison.OrdinalIgnoreCase)
+                && (aspect is null || (long)row.Mode.Width * aspect.Height == (long)aspect.Width * row.Mode.Height))
+                .ToArray();
         ModeList.ItemsSource = matching;
         ModeList.SelectedValue = selected;
         if (ModeList.SelectedIndex < 0 && matching.Count > 0) ModeList.SelectedIndex = 0;
@@ -188,6 +213,45 @@ public partial class MainWindow : Window
 
     private void ApplyCustom_Click(object sender, RoutedEventArgs e) => Try(() =>
         _controller.ApplyMode(SelectedMonitor().DeviceName, ReadMode(CustomWidth, CustomHeight, CustomRefresh)));
+
+    private void RestorePreviousMode_Click(object sender, RoutedEventArgs e) => Try(() =>
+        _controller.RestorePreviousMode(SelectedMonitor().DeviceName));
+
+    private void CopyCurrentMode_Click(object sender, RoutedEventArgs e)
+    {
+        if (_currentMode is not { } mode) return;
+        try
+        {
+            Clipboard.SetText($"{SelectedMonitor().Name} · {mode}");
+            ShowStatus("Current mode copied.");
+        }
+        catch (System.Runtime.InteropServices.ExternalException)
+        {
+            ShowError("Couldn’t copy the current mode. Try again.");
+        }
+    }
+
+    private void ToggleMonitor_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is Button { DataContext: MonitorCard { CanToggle: true } card })
+            Try(() => _controller.SetMonitorEnabled(card.Monitor, !card.Monitor.IsEnabled));
+    }
+
+    private void ConfigureMonitor_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is not Button { DataContext: MonitorCard { Monitor.DeviceName: { } deviceName } }) return;
+        var target = _monitors.FirstOrDefault(item => string.Equals(item.DeviceName, deviceName, StringComparison.OrdinalIgnoreCase));
+        if (target is null)
+        {
+            ShowError("This monitor is unavailable. Refresh the monitor list and try again.");
+            return;
+        }
+
+        DisplayPicker.SelectedItem = target;
+        Navigate("Display");
+    }
+
+    private void IdentifyMonitors_Click(object sender, RoutedEventArgs e) => Try(_controller.IdentifyMonitors);
 
     private void SaveSelected_Click(object sender, RoutedEventArgs e)
     {
@@ -353,10 +417,12 @@ public partial class MainWindow : Window
     private void Navigate(string page)
     {
         DisplayPage.Visibility = page == "Display" ? Visibility.Visible : Visibility.Collapsed;
+        MonitorsPage.Visibility = page == "Monitors" ? Visibility.Visible : Visibility.Collapsed;
         ProfilesPage.Visibility = page == "Profiles" ? Visibility.Visible : Visibility.Collapsed;
         SettingsPage.Visibility = page == "Settings" ? Visibility.Visible : Visibility.Collapsed;
         AboutPage.Visibility = page == "About" ? Visibility.Visible : Visibility.Collapsed;
         if (page == "Display") DisplayNav.IsChecked = true;
+        if (page == "Monitors") MonitorsNav.IsChecked = true;
         if (page == "Profiles") ProfilesNav.IsChecked = true;
         if (page == "Settings") SettingsNav.IsChecked = true;
         if (page == "About") AboutNav.IsChecked = true;
@@ -419,6 +485,19 @@ public partial class MainWindow : Window
     {
         public string DeviceName => Target.DeviceName;
         public string Label => Disconnected ? "Saved monitor (disconnected)" : Target.IsPrimary ? $"{Target.Name} · Primary" : Target.Name;
+    }
+
+    private sealed record MonitorCard(ConnectedMonitor Monitor, int ActiveCount, string? ManagementError)
+    {
+        public string Name => Monitor.Name;
+        public bool IsEnabled => Monitor.IsEnabled;
+        public bool CanConfigure => Monitor.IsEnabled && !string.IsNullOrEmpty(Monitor.DeviceName);
+        public bool CanToggle => ManagementError is null && (!Monitor.IsEnabled || ActiveCount > 1);
+        public string ConfigureLabel => $"Edit resolution for {Name}";
+        public string ActionLabel => IsEnabled ? "Disable" : "Enable";
+        public string ActionAccessibilityLabel => $"{ActionLabel} {Name}";
+        public string StatusLabel => !IsEnabled ? "Disabled" : Monitor.IsPrimary ? "Enabled · Primary" : "Enabled";
+        public string? ActionHelp => ManagementError ?? (CanToggle ? null : "At least one monitor must stay enabled.");
     }
 
     private sealed record ModeRow(DisplayMode Mode)

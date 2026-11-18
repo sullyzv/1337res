@@ -13,6 +13,8 @@ public sealed class AppController : IDisposable
     private readonly App _app;
     private readonly HotkeyWindow _hotkeys;
     private readonly Dictionary<Guid, int> _hotkeyIds = [];
+    private readonly Dictionary<string, DisplayMode> _previousModes = new(StringComparer.OrdinalIgnoreCase);
+    private readonly List<Window> _identifiers = [];
     private readonly string? _settingsWarning;
     private Settings _settings;
     private MainWindow? _window;
@@ -27,7 +29,7 @@ public sealed class AppController : IDisposable
     {
         _app = app;
         _settings = SettingsStore.Load(out _settingsWarning);
-        Displays = DisplayService.GetDisplays();
+        ReadDisplays();
         _hotkeys = new HotkeyWindow();
         _hotkeys.Pressed += id =>
         {
@@ -41,7 +43,9 @@ public sealed class AppController : IDisposable
         };
     }
 
-    public IReadOnlyList<DisplayTarget> Displays { get; private set; }
+    public IReadOnlyList<DisplayTarget> Displays { get; private set; } = [];
+    public IReadOnlyList<ConnectedMonitor> Monitors { get; private set; } = [];
+    public string? MonitorManagementError { get; private set; }
     public IReadOnlyList<ResolutionProfile> Profiles => _settings.Profiles;
     public bool CloseToTray => _settings.CloseToTray;
     public bool StartWithWindows
@@ -91,8 +95,33 @@ public sealed class AppController : IDisposable
 
     public void RefreshDisplays()
     {
-        Displays = DisplayService.GetDisplays();
+        ReadDisplays();
+        RefreshTray();
         Changed?.Invoke(this, EventArgs.Empty);
+    }
+
+    private void ReadDisplays()
+    {
+        Displays = DisplayService.GetDisplays();
+        try
+        {
+            Monitors = MonitorTopology.GetMonitors();
+            MonitorManagementError = null;
+            Displays = Displays.Select(display =>
+            {
+                var connected = Monitors.Where(monitor => monitor.IsEnabled &&
+                    string.Equals(monitor.DeviceName, display.DeviceName, StringComparison.OrdinalIgnoreCase)).ToArray();
+                return connected.Length == 1 && !string.Equals(connected[0].Name, display.Name, StringComparison.OrdinalIgnoreCase)
+                    ? display with { Name = connected[0].Name }
+                    : display;
+            }).ToArray();
+        }
+        catch (InvalidOperationException error)
+        {
+            MonitorManagementError = error.Message;
+            Monitors = Displays.Select(display => new ConnectedMonitor(
+                display.StableId ?? display.DeviceName, display.Name, display.DeviceName, true, display.IsPrimary)).ToArray();
+        }
     }
 
     public DisplayTarget? GetProfileDisplay(ResolutionProfile profile) => ResolveDisplay(profile, Displays);
@@ -107,9 +136,67 @@ public sealed class AppController : IDisposable
     public void ApplyProfile(ResolutionProfile profile)
     {
         var display = ResolveDisplay(profile, DisplayService.GetDisplays());
-        if (display is null) throw new InvalidOperationException($"Connect the display assigned to “{profile.Name}” and try again.");
+        if (display is null) throw new InvalidOperationException($"Connect or enable the monitor assigned to “{profile.Name}”, then try again.");
         ApplyMode(display.DeviceName, profile.Mode);
     }
+
+    public void SetMonitorEnabled(ConnectedMonitor monitor, bool enabled)
+    {
+        if (_confirmation is not null) return;
+        if (MonitorManagementError is not null) throw new InvalidOperationException(MonitorManagementError);
+        if (monitor.IsEnabled == enabled) return;
+
+        CloseIdentifiers();
+        MonitorTopology.Snapshot? previous = null;
+        bool kept = ConfirmChange(new ModeConfirmation(monitor, enabled),
+            () => previous = MonitorTopology.SetEnabled(monitor.Id, enabled),
+            () => MonitorTopology.Restore(previous!),
+            "The previous monitor setup could not be restored. Open Windows Display settings to recover it.",
+            useWindowCenter: false);
+        RefreshDisplays();
+        Announce(kept ? $"{monitor.Name} {(enabled ? "enabled" : "disabled")}." : "Restored the previous monitor setup.");
+    }
+
+    public void IdentifyMonitors()
+    {
+        if (_confirmation is not null) return;
+        CloseIdentifiers();
+        var screens = Forms.Screen.AllScreens;
+        foreach (var display in Displays)
+        {
+            var screen = screens.FirstOrDefault(item =>
+                string.Equals(item.DeviceName, display.DeviceName, StringComparison.OrdinalIgnoreCase));
+            if (screen is null) continue;
+            var identifier = new MonitorIdentifier(display, screen);
+            _identifiers.Add(identifier);
+            identifier.Closed += (_, _) => _identifiers.Remove(identifier);
+            identifier.Show();
+        }
+    }
+
+    private void CloseIdentifiers()
+    {
+        foreach (var identifier in _identifiers.ToArray()) identifier.Close();
+    }
+
+    public bool CanRestorePreviousMode(string deviceName) => _previousModes.ContainsKey(ModeHistoryKey(deviceName));
+
+    public void RestorePreviousMode(string deviceName)
+    {
+        string key = ModeHistoryKey(deviceName);
+        if (!_previousModes.TryGetValue(key, out var previous)) return;
+        if (GetCurrent(deviceName) == previous)
+        {
+            _previousModes.Remove(key);
+            RefreshDisplays();
+            Announce($"{previous} is already active.");
+            return;
+        }
+        ApplyMode(deviceName, previous);
+    }
+
+    private string ModeHistoryKey(string deviceName) => Displays.FirstOrDefault(display =>
+        string.Equals(display.DeviceName, deviceName, StringComparison.OrdinalIgnoreCase))?.StableId ?? deviceName;
 
     public void ApplyMode(string deviceName, DisplayMode mode)
     {
@@ -121,30 +208,44 @@ public sealed class AppController : IDisposable
             return;
         }
 
-        _confirmation = new ModeConfirmation(mode);
-        if (_window?.IsVisible == true && _window.IsActive && _window.WindowState != WindowState.Minimized)
+        CloseIdentifiers();
+        bool kept = ConfirmChange(new ModeConfirmation(mode),
+            () => DisplayService.Apply(deviceName, mode),
+            () => DisplayService.Apply(deviceName, previous),
+            "The previous mode could not be restored. Open Windows Display settings to recover it.");
+        if (kept) _previousModes[ModeHistoryKey(deviceName)] = previous;
+        RefreshDisplays();
+        Announce(kept ? $"Display set to {GetCurrent(deviceName)}." : $"Restored {previous}.");
+    }
+
+    private bool ConfirmChange(ModeConfirmation confirmation, Action apply, Action revert, string revertError,
+        bool useWindowCenter = true)
+    {
+        if (useWindowCenter && _window?.IsVisible == true && _window.IsActive && _window.WindowState != WindowState.Minimized)
         {
-            _confirmation.Owner = _window;
-            _confirmation.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            confirmation.Owner = _window;
+            confirmation.WindowStartupLocation = WindowStartupLocation.CenterOwner;
         }
 
+        _confirmation = confirmation;
         bool applied = false;
         bool kept = false;
         try
         {
-            DisplayService.Apply(deviceName, mode);
+            apply();
             applied = true;
-            kept = _confirmation.ShowDialog() == true;
+            kept = confirmation.ShowDialog() == true;
+            return kept;
         }
         finally
         {
             try
             {
-                if (applied && !kept) DisplayService.Apply(deviceName, previous);
+                if (applied && !kept) revert();
             }
             catch (InvalidOperationException error)
             {
-                throw new InvalidOperationException($"The previous mode could not be restored. Open Windows Display settings to recover it. {error.Message}", error);
+                throw new InvalidOperationException($"{revertError} {error.Message}", error);
             }
             finally
             {
@@ -152,8 +253,6 @@ public sealed class AppController : IDisposable
             }
         }
 
-        RefreshDisplays();
-        Announce(kept ? $"Display set to {GetCurrent(deviceName)}." : $"Restored {previous}.");
     }
 
     public void SaveProfile(ResolutionProfile profile)
@@ -308,6 +407,17 @@ public sealed class AppController : IDisposable
             }
             menu.Items.Add(profiles);
         }
+        var restorable = Displays.Where(display => CanRestorePreviousMode(display.DeviceName)).ToArray();
+        if (restorable.Length > 0)
+        {
+            var restore = new Forms.ToolStripMenuItem("Restore previous resolution");
+            foreach (var display in restorable)
+            {
+                string title = display.Name.Replace("&", "&&", StringComparison.Ordinal);
+                restore.DropDownItems.Add(title, null, (_, _) => Try(() => RestorePreviousMode(display.DeviceName)));
+            }
+            menu.Items.Add(restore);
+        }
         menu.Items.Add(new Forms.ToolStripSeparator());
         menu.Items.Add("Quit 1337res", null, (_, _) => Exit());
         var oldMenu = _tray.ContextMenuStrip;
@@ -356,6 +466,7 @@ public sealed class AppController : IDisposable
 
     public void Dispose()
     {
+        CloseIdentifiers();
         if (_tray is not null)
         {
             _tray.Visible = false;

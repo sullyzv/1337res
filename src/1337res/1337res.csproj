@@ -10,14 +10,15 @@
     <AssemblyName>1337res</AssemblyName>
     <Nullable>enable</Nullable>
     <ImplicitUsings>disable</ImplicitUsings>
-    <Version>1.0.0</Version>
+    <Version>1.1.0</Version>
     <Product>1337res</Product>
     <Authors>harm</Authors>
-    <Description>Display modes, saved profiles, and global hotkeys.</Description>
+    <Description>Monitor controls, display modes, saved profiles, and global hotkeys.</Description>
     <!-- WPF owns the windows. WinForms only supplies the tray icon and menu. -->
     <NoWarn>$(NoWarn);WFO0003</NoWarn>
   </PropertyGroup>
   <ItemGroup>
+    <Resource Include="1337res.ico" />
     <Using Include="System" />
     <Using Include="System.Collections.Generic" />
     <Using Include="System.Linq" />
