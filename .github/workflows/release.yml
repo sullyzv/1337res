@@ -1,0 +1,99 @@
+name: Windows build and release
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Release version, for example 1.0.0
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    if: github.event_name != 'workflow_dispatch' || github.ref == 'refs/heads/main'
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: '10.0.x'
+      - name: Build portable executable
+        shell: pwsh
+        env:
+          RELEASE_VERSION: ${{ inputs.version }}
+        run: |
+          if ($env:GITHUB_REF_TYPE -eq 'tag') {
+            .\scripts\publish.ps1 -Version ($env:GITHUB_REF_NAME.Substring(1))
+          } elseif ($env:GITHUB_EVENT_NAME -eq 'workflow_dispatch') {
+            .\scripts\publish.ps1 -Version $env:RELEASE_VERSION
+          } else {
+            .\scripts\publish.ps1
+          }
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: 1337res-win-x64
+          path: |
+            artifacts/win-x64/1337res-win-x64.exe
+            artifacts/win-x64/1337res-win-x64.exe.sha256
+          if-no-files-found: error
+          retention-days: 14
+          compression-level: 0
+
+  release:
+    if: >-
+      (github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')) ||
+      (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main')
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    concurrency:
+      group: release-${{ inputs.version && format('v{0}', inputs.version) || github.ref_name }}
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: 1337res-win-x64
+          path: release
+      - name: Verify checksum and publish GitHub release
+        working-directory: release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_VERSION: ${{ inputs.version }}
+        run: |
+          sha256sum --check 1337res-win-x64.exe.sha256
+          if [[ "${GITHUB_EVENT_NAME}" == 'workflow_dispatch' ]]; then
+            tag="v${RELEASE_VERSION}"
+            tag_ref="refs/tags/${tag}"
+            if refs=$(git ls-remote --exit-code "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}.git" "$tag_ref" "${tag_ref}^{}"); then
+              target=$(printf '%s\n' "$refs" | tail -n 1 | cut -f 1)
+              if [[ "$target" != "$GITHUB_SHA" ]]; then
+                echo "::error::Tag ${tag} already points to a different commit."
+                exit 1
+              fi
+            else
+              status=$?
+              if [[ $status -ne 2 ]]; then exit "$status"; fi
+            fi
+            release_flags=(--target "$GITHUB_SHA")
+          else
+            tag="$GITHUB_REF_NAME"
+            release_flags=(--verify-tag)
+          fi
+          if [[ "$tag" == *-* ]]; then
+            release_flags+=(--prerelease)
+          fi
+          gh release create "$tag" \
+            1337res-win-x64.exe 1337res-win-x64.exe.sha256 \
+            --repo "$GITHUB_REPOSITORY" --generate-notes --title "1337res $tag" "${release_flags[@]}"
